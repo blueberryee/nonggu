@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>직관 캘린더</title>
+<title>26-27 KBL 농구 캘린더</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Oswald:wght@500;700&display=swap">
 <style>
 :root{--bg:#f3f5f8;--card:#fff;--ink:#101828;--mut:#667085;--line:#dde2ea;--hot:#e8590c;--sel:#e4ebf8;--onink:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -19,6 +19,7 @@ button:focus-visible{outline:2px solid var(--hot);outline-offset:2px}
 .nav{display:flex;align-items:center;justify-content:space-between;margin:4px 0 8px}
 .nav h1{font-size:20px;margin:0}.nav button{width:44px;height:44px;font-size:20px;border-radius:50%}
 .nav button:disabled{opacity:.25}
+.nav button.chip{width:auto;height:40px;font-size:14px;border-radius:20px;white-space:nowrap;flex:none}
 .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
 .wd{text-align:center;color:var(--mut);font-size:12px;padding:4px 0}
 .d{position:relative;aspect-ratio:1/1.12;background:var(--card);border-radius:8px;padding:4px 0 0;display:flex;flex-direction:column;align-items:center}
@@ -236,7 +237,15 @@ function render(){const v=tab==='cal'?calView():tab==='bk'?bookView():tab==='ed'
  document.getElementById('tabs').innerHTML=[['cal','달력'],['bk','예매'],['set','내 설정']].map(t=>`<button data-a="tab:${t[0]}" ${((tab==='ed'||tab==='bp')?pt:tab)===t[0]?'aria-current="true"':''}>${t[1]}</button>`).join('')}
 let SC={};
 const scKey=g=>g[1]+'|'+g[3]+'|'+g[4];
-const scNote=g=>{const s=SC[scKey(g)];return s&&s.final?`<p class="note">자동 스코어 ${s.hs}:${s.as} <button class="chip" data-a="usesc">적용</button></p>`:''};
+const scOf=g=>{const r=R[g[0]];if(r&&r.hs!==''&&r.as!==''&&r.hs!=null&&r.as!=null)return[r.hs,r.as];const x=SC[scKey(g)];return x&&x.final?[x.hs,x.as]:null};
+function recBadge(g){const r=R[g[0]]||{},t=[];if(r.bk)t.push('예매 완료');else if(r.ch)t.push('예매 도전');const a=scOf(g);if(a)t.push('종료 '+a[0]+':'+a[1]);const u=R[g[0]]?unp(r):0;if(u)t.push('미정산 '+u+'명');return t.length?`<small><em>${t.join(' · ')}</em></small>`:''}
+function gameRow(g){const o=opens(g).filter(e=>e.d>now).map(e=>fmt(e.d)+' '+hm(e.d)+' '+e.lab).join(' / ');
+ return `<div class="g ${rel(g)?'':'dim'}"><span class="tm num">${g[2]}</span><span class="bar" style="background:${col(g)}"></span><div style="flex:1"><b>${g[3]}</b> 홈 vs ${g[4]}<small>${V[g[3]]}</small>${o?`<small>예매 <em>${o}</em></small>`:''}${recBadge(g)}</div><div style="display:flex;flex-direction:column;gap:6px"><button class="chip" data-a="bp:${g[0]}">예매</button><button class="chip" data-a="edit:${g[0]}">기록</button></div></div>`}
+function edView(){const g=G.find(x=>x[0]===eid),r=rec(eid),x=SC[scKey(g)],au=x&&x.final,hv=r.hs!==''?r.hs:(au?x.hs:''),av=r.as!==''?r.as:(au?x.as:'');
+ return `<div class="nav"><button data-a="back" aria-label="뒤로">‹</button><h1 style="font-size:17px">${fmt(gdt(g))} ${g[3]} vs ${g[4]}</h1><button class="chip" data-a="bp:${eid}">예매·정산</button></div>
+<div class="panel ed"><h2>스코어</h2><div class="row"><span>${g[3]}</span><input data-f="hs" type="number" inputmode="numeric" value="${q(hv)}" style="text-align:center" aria-label="${g[3]} 점수"><span>:</span><input data-f="as" type="number" inputmode="numeric" value="${q(av)}" style="text-align:center" aria-label="${g[4]} 점수"><span>${g[4]}</span></div>${au&&r.hs===''&&r.as===''?'<p class="note">KBL 기록이 자동 반영됐어요. 직접 고치면 내 입력이 우선돼요.</p>':''}</div>
+<div class="panel ed"><h2>한줄평</h2><textarea data-f="memo" rows="3" placeholder="오늘 경기는…">${q(r.memo)}</textarea></div>`}
+document.addEventListener('input',e=>{const f=e.target.dataset.f;if(tab!=='ed'||(f!=='hs'&&f!=='as'))return;const g=G.find(x=>x[0]===eid),x=SC[scKey(g)],r=rec(eid);if(x&&x.final){if(r.hs==='')r.hs=String(x.hs);if(r.as==='')r.as=String(x.as);saveR()}});
 try{fetch('scores.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{if(j&&j.games){j.games.forEach(s=>{SC[s.date+'|'+s.home+'|'+s.away]=s});render()}}).catch(()=>{})}catch(e){}
 render();
 </script>
