@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>직관 캘린더</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Oswald:wght@500;700&display=swap">
+<style>
+:root{--bg:#f3f5f8;--card:#fff;--ink:#101828;--mut:#667085;--line:#dde2ea;--hot:#e8590c;--sel:#e4ebf8;--onink:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--card:#161b22;--ink:#e6edf3;--mut:#8b949e;--line:#2a313c;--hot:#ff8a4c;--sel:#1f2a3d;--onink:#0d1117;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1117;--card:#161b22;--ink:#e6edf3;--mut:#8b949e;--line:#2a313c;--hot:#ff8a4c;--sel:#1f2a3d;--onink:#0d1117;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 "Noto Sans KR",system-ui,sans-serif}
+main{max-width:520px;margin:0 auto;padding:12px 12px 88px}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+button:focus-visible{outline:2px solid var(--hot);outline-offset:2px}
+.num{font-family:Oswald,"Noto Sans KR",sans-serif;font-weight:700;letter-spacing:.02em}
+.next{background:var(--ink);color:var(--onink);border-radius:12px;padding:10px 14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.next .num{font-size:22px;white-space:nowrap}.next small{opacity:.75;display:block;font-size:12px}
+.nav{display:flex;align-items:center;justify-content:space-between;margin:4px 0 8px}
+.nav h1{font-size:20px;margin:0}.nav button{width:44px;height:44px;font-size:20px;border-radius:50%}
+.nav button:disabled{opacity:.25}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.wd{text-align:center;color:var(--mut);font-size:12px;padding:4px 0}
+.d{position:relative;aspect-ratio:1/1.12;background:var(--card);border-radius:8px;padding:4px 0 0;display:flex;flex-direction:column;align-items:center}
+.d b{font:500 14px Oswald,sans-serif}.d.t b{background:var(--ink);color:var(--onink);border-radius:10px;padding:0 6px}
+.d.s{outline:2px solid var(--ink)}
+.dots{display:flex;gap:2px;flex-wrap:wrap;justify-content:center;margin-top:3px;padding:0 3px}
+.dots i{width:7px;height:7px;border-radius:50%}
+.d u{position:absolute;right:2px;bottom:2px;text-decoration:none;background:var(--hot);color:#fff;font:700 10px/1 Oswald,sans-serif;padding:2px 4px;border-radius:3px 3px 3px 0}
+.e{background:none}
+.panel{background:var(--card);border-radius:12px;padding:12px;margin-top:12px}
+.panel h2{font-size:14px;margin:0 0 8px;color:var(--mut);font-weight:500}
+.g{display:flex;gap:10px;align-items:stretch;padding:8px 0;border-top:1px solid var(--line)}
+.g:first-of-type{border-top:0}.g.dim{opacity:.5}
+.g .tm{font-size:17px;width:48px;flex:none}
+.g .bar{width:4px;border-radius:2px;flex:none}
+.g small{display:block;color:var(--mut);font-size:12px;line-height:1.45}
+.g em{font-style:normal;color:var(--hot);font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border:1.5px solid var(--line);border-radius:20px;background:var(--card)}
+.chip i{width:9px;height:9px;border-radius:50%}
+.chip[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--onink)}
+.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs div{display:flex;width:100%;max-width:520px}
+.tabs button{flex:1;height:56px;color:var(--mut);font-weight:500}
+.tabs button[aria-current="true"]{color:var(--ink);box-shadow:inset 0 3px 0 var(--ink)}
+.note{color:var(--mut);font-size:13px;margin:10px 0 0}
+.more{display:block;width:100%;height:44px;margin-top:8px;border:1.5px solid var(--line);border-radius:8px}
+.go{display:inline-block;margin-top:8px;padding:10px 16px;background:var(--ink);color:var(--onink);border-radius:8px}
+.ed input,.ed textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:8px;padding:10px;min-height:44px}
+.row{display:flex;gap:6px;align-items:center;margin-top:6px}.row input{min-width:0;flex:1}.row .chip{padding:0 10px;flex:none}.row span{flex:none}
+.x{width:40px;height:40px;font-size:20px;color:var(--mut);flex:none}.chip:disabled{opacity:.6}
+</style></head><body><main id="app"></main>
+<nav class="tabs"><div id="tabs"></div></nav>
+<script>
+const G=[[1,"2026-10-03","14:00","KCC","LG"],[2,"2026-10-03","14:00","소노","가스공사"],[3,"2026-10-03","16:30","정관장","모비스"],[4,"2026-10-04","14:00","DB","소노"],[5,"2026-10-04","16:30","KT","삼성"],[6,"2026-10-05","14:00","모비스","KCC"],[7,"2026-10-05","16:30","가스공사","정관장"],[8,"2026-10-06","19:00","KT","LG"],[9,"2026-10-07","19:00","KCC","가스공사"],[10,"2026-10-08","19:00","DB","LG"],[11,"2026-10-09","14:00","KT","소노"],[12,"2026-10-09","16:30","삼성","정관장"],[13,"2026-10-10","14:00","KCC","DB"],[14,"2026-10-10","16:30","모비스","가스공사"],[15,"2026-10-11","14:00","정관장","LG"],[16,"2026-10-11","14:00","삼성","소노"],[17,"2026-10-11","16:30","KCC","KT"],[18,"2026-10-12","19:00","모비스","DB"],[19,"2026-10-13","19:00","정관장","소노"],[20,"2026-10-14","19:00","가스공사","KT"],[21,"2026-10-15","19:00","삼성","LG"],[22,"2026-10-16","19:00","소노","모비스"],[23,"2026-10-17","14:00","정관장","KT"],[24,"2026-10-17","14:00","DB","삼성"],[25,"2026-10-17","16:30","가스공사","LG"],[26,"2026-10-18","14:00","SK","소노"],[27,"2026-10-18","14:00","KT","모비스"],[28,"2026-10-18","16:30","정관장","KCC"],[29,"2026-10-19","19:00","DB","가스공사"],[30,"2026-10-20","19:00","SK","정관장"],[31,"2026-10-21","19:00","삼성","KCC"],[32,"2026-10-22","19:00","모비스","LG"],[33,"2026-10-23","19:00","KT","DB"],[34,"2026-10-24","14:00","SK","LG"],[35,"2026-10-24","16:30","모비스","삼성"],[36,"2026-10-24","16:30","소노","KCC"],[37,"2026-10-25","14:00","SK","KT"],[38,"2026-10-25","14:00","정관장","DB"],[39,"2026-10-25","16:30","가스공사","삼성"],[40,"2026-10-26","19:00","소노","LG"],[41,"2026-10-27","19:00","SK","KCC"],[42,"2026-10-28","19:00","가스공사","DB"],[43,"2026-10-29","19:00","모비스","KCC"],[44,"2026-10-30","19:00","소노","삼성"],[45,"2026-10-31","14:00","KCC","DB"],[46,"2026-10-31","14:00","정관장","KT"],[47,"2026-10-31","16:30","가스공사","모비스"],[48,"2026-11-01","14:00","소노","KT"],[49,"2026-11-01","14:00","LG","DB"],[50,"2026-11-01","16:30","삼성","SK"],[51,"2026-11-02","19:00","가스공사","정관장"],[52,"2026-11-03","19:00","KCC","소노"],[53,"2026-11-04","19:00","SK","가스공사"],[54,"2026-11-05","19:00","모비스","삼성"],[55,"2026-11-06","19:00","정관장","SK"],[56,"2026-11-07","14:00","LG","소노"],[57,"2026-11-07","14:00","DB","삼성"],[58,"2026-11-07","16:30","KT","가스공사"],[59,"2026-11-08","14:00","SK","DB"],[60,"2026-11-08","14:00","모비스","정관장"],[61,"2026-11-08","16:30","LG","KCC"],[62,"2026-11-09","19:00","삼성","KT"],[63,"2026-11-10","19:00","모비스","소노"],[64,"2026-11-11","19:00","LG","SK"],[65,"2026-11-12","19:00","가스공사","소노"],[66,"2026-11-13","19:00","DB","KT"],[67,"2026-11-14","14:00","KCC","SK"],[68,"2026-11-14","14:00","LG","모비스"],[69,"2026-11-14","16:30","삼성","정관장"],[70,"2026-11-15","14:00","소노","DB"],[71,"2026-11-15","14:00","LG","KT"],[72,"2026-11-15","16:30","KCC","가스공사"],[73,"2026-11-16","19:00","SK","모비스"],[74,"2026-11-17","19:00","DB","정관장"],[75,"2026-11-18","19:00","삼성","LG"],[76,"2026-11-19","19:00","정관장","KCC"],[77,"2026-11-19","19:00","KT","SK"],[78,"2026-12-03","19:00","소노","SK"],[79,"2026-12-03","19:00","LG","정관장"],[80,"2026-12-04","19:00","KCC","삼성"],[81,"2026-12-04","19:00","KT","모비스"],[82,"2026-12-05","14:00","소노","정관장"],[83,"2026-12-05","14:00","LG","가스공사"],[84,"2026-12-05","16:30","DB","SK"],[85,"2026-12-06","14:00","KT","KCC"],[86,"2026-12-06","14:00","가스공사","삼성"],[87,"2026-12-06","16:30","DB","모비스"],[88,"2026-12-07","19:00","LG","SK"],[89,"2026-12-08","19:00","정관장","모비스"],[90,"2026-12-09","19:00","삼성","KCC"],[91,"2026-12-10","19:00","가스공사","DB"],[92,"2026-12-11","19:00","SK","KCC"],[93,"2026-12-12","14:00","LG","모비스"],[94,"2026-12-12","14:00","정관장","소노"],[95,"2026-12-12","16:30","삼성","DB"],[96,"2026-12-13","14:00","SK","정관장"],[97,"2026-12-13","14:00","모비스","KT"],[98,"2026-12-13","16:30","KCC","가스공사"],[99,"2026-12-14","19:00","LG","삼성"],[100,"2026-12-15","19:00","SK","KT"],[101,"2026-12-16","19:00","KCC","정관장"],[102,"2026-12-17","19:00","모비스","DB"],[103,"2026-12-18","19:00","삼성","소노"],[104,"2026-12-19","14:00","KCC","모비스"],[105,"2026-12-19","14:00","SK","DB"],[106,"2026-12-19","16:30","KT","LG"],[107,"2026-12-20","14:00","정관장","가스공사"],[108,"2026-12-20","14:00","소노","SK"],[109,"2026-12-20","16:30","삼성","KT"],[110,"2026-12-21","19:00","KCC","LG"],[111,"2026-12-22","19:00","삼성","모비스"],[112,"2026-12-23","19:00","소노","가스공사"],[113,"2026-12-24","19:00","KCC","DB"],[114,"2026-12-24","19:00","KT","정관장"],[115,"2026-12-25","14:00","소노","모비스"],[116,"2026-12-25","14:00","LG","가스공사"],[117,"2026-12-25","16:30","SK","삼성"],[118,"2026-12-26","14:00","DB","정관장"],[119,"2026-12-26","16:30","KT","KCC"],[120,"2026-12-27","14:00","SK","모비스"],[121,"2026-12-27","14:00","가스공사","삼성"],[122,"2026-12-27","16:30","LG","소노"],[123,"2026-12-28","19:00","DB","KT"],[124,"2026-12-29","19:00","정관장","LG"],[125,"2026-12-30","19:00","모비스","가스공사"],[126,"2026-12-31","19:00","KT","소노"],[127,"2026-12-31","22:00","정관장","삼성"],[128,"2027-01-01","14:00","DB","LG"],[129,"2027-01-01","16:30","모비스","SK"],[130,"2027-01-02","14:00","소노","KCC"],[131,"2027-01-02","14:00","가스공사","KT"],[132,"2027-01-03","14:00","DB","소노"],[133,"2027-01-03","14:00","가스공사","SK"],[134,"2027-01-03","16:30","모비스","LG"],[135,"2027-01-04","19:00","KCC","정관장"],[136,"2027-01-05","19:00","소노","삼성"],[137,"2027-01-06","19:00","가스공사","SK"],[138,"2027-01-07","19:00","삼성","DB"],[139,"2027-01-08","19:00","KCC","LG"],[140,"2027-01-09","14:00","KT","SK"],[141,"2027-01-09","14:00","가스공사","소노"],[142,"2027-01-09","16:30","삼성","모비스"],[143,"2027-01-10","14:00","정관장","DB"],[144,"2027-01-10","14:00","SK","LG"],[145,"2027-01-10","16:30","KCC","소노"],[146,"2027-01-11","19:00","KT","가스공사"],[147,"2027-01-12","19:00","DB","모비스"],[148,"2027-01-13","19:00","소노","KT"],[149,"2027-01-14","19:00","정관장","SK"],[150,"2027-01-15","19:00","가스공사","KCC"],[151,"2027-01-16","14:00","LG","정관장"],[152,"2027-01-16","16:30","KT","모비스"],[153,"2027-01-17","14:00","소노","DB"],[154,"2027-01-17","14:00","SK","가스공사"],[155,"2027-01-17","16:30","KCC","삼성"],[156,"2027-01-18","19:00","LG","KT"],[157,"2027-01-19","19:00","SK","DB"],[158,"2027-01-20","19:00","모비스","KCC"],[159,"2027-01-21","19:00","정관장","가스공사"],[160,"2027-01-22","19:00","SK","KCC"],[161,"2027-01-23","14:00","소노","정관장"],[162,"2027-01-23","14:00","가스공사","모비스"],[163,"2027-01-23","16:30","삼성","LG"],[164,"2027-01-24","14:00","KT","정관장"],[165,"2027-01-24","14:00","DB","KCC"],[166,"2027-01-24","16:30","삼성","SK"],[167,"2027-01-25","19:00","LG","가스공사"],[168,"2027-01-25","19:00","모비스","소노"],[169,"2027-01-26","19:00","정관장","삼성"],[170,"2027-01-26","19:00","DB","KT"],[171,"2027-01-27","19:00","LG","소노"],[172,"2027-01-27","19:00","모비스","SK"],[173,"2027-01-28","19:00","DB","가스공사"],[174,"2027-01-28","19:00","KT","삼성"],[175,"2027-02-03","19:00","LG","DB"],[176,"2027-02-03","19:00","삼성","가스공사"],[177,"2027-02-04","19:00","KCC","KT"],[178,"2027-02-04","19:00","모비스","정관장"],[179,"2027-02-05","19:00","LG","SK"],[180,"2027-02-06","14:00","가스공사","KCC"],[181,"2027-02-06","14:00","DB","정관장"],[182,"2027-02-06","16:30","소노","KT"],[183,"2027-02-07","14:00","모비스","가스공사"],[184,"2027-02-07","14:00","LG","KCC"],[185,"2027-02-07","16:30","삼성","SK"],[186,"2027-02-08","14:00","정관장","소노"],[187,"2027-02-08","16:30","KT","DB"],[188,"2027-02-09","14:00","KCC","모비스"],[189,"2027-02-09","16:30","SK","삼성"],[190,"2027-02-10","19:00","가스공사","DB"],[191,"2027-02-11","19:00","모비스","소노"],[192,"2027-02-12","19:00","LG","삼성"],[193,"2027-02-13","14:00","KCC","소노"],[194,"2027-02-13","14:00","정관장","KT"],[195,"2027-02-13","16:30","가스공사","SK"],[196,"2027-02-14","14:00","KT","LG"],[197,"2027-02-14","14:00","모비스","DB"],[198,"2027-02-14","16:30","KCC","삼성"],[199,"2027-02-15","19:00","SK","정관장"],[200,"2027-02-16","19:00","소노","가스공사"],[201,"2027-02-17","19:00","정관장","모비스"],[202,"2027-02-17","19:00","KT","KCC"],[203,"2027-02-18","19:00","소노","삼성"],[204,"2027-02-18","19:00","DB","LG"],[205,"2027-03-04","19:00","KCC","SK"],[206,"2027-03-04","19:00","DB","소노"],[207,"2027-03-05","19:00","KT","삼성"],[208,"2027-03-05","19:00","가스공사","정관장"],[209,"2027-03-06","14:00","소노","LG"],[210,"2027-03-06","14:00","DB","KCC"],[211,"2027-03-06","16:30","SK","모비스"],[212,"2027-03-07","14:00","가스공사","KT"],[213,"2027-03-07","14:00","정관장","LG"],[214,"2027-03-07","16:30","삼성","모비스"],[215,"2027-03-08","19:00","DB","SK"],[216,"2027-03-09","19:00","삼성","정관장"],[217,"2027-03-10","19:00","가스공사","LG"],[218,"2027-03-11","19:00","KT","SK"],[219,"2027-03-12","19:00","LG","모비스"],[220,"2027-03-13","14:00","정관장","KCC"],[221,"2027-03-13","14:00","DB","삼성"],[222,"2027-03-13","16:30","SK","소노"],[223,"2027-03-14","14:00","모비스","KT"],[224,"2027-03-14","14:00","삼성","가스공사"],[225,"2027-03-14","16:30","소노","LG"],[226,"2027-03-15","19:00","DB","KCC"],[227,"2027-03-16","19:00","모비스","정관장"],[228,"2027-03-17","19:00","가스공사","소노"],[229,"2027-03-18","19:00","LG","KCC"],[230,"2027-03-19","19:00","삼성","KT"],[231,"2027-03-20","14:00","KCC","정관장"],[232,"2027-03-20","14:00","모비스","SK"],[233,"2027-03-20","16:30","가스공사","LG"],[234,"2027-03-21","14:00","KT","소노"],[235,"2027-03-21","14:00","삼성","DB"],[236,"2027-03-21","16:30","모비스","LG"],[237,"2027-03-22","19:00","정관장","SK"],[238,"2027-03-23","19:00","소노","KCC"],[239,"2027-03-24","19:00","정관장","삼성"],[240,"2027-03-25","19:00","SK","KT"],[241,"2027-03-26","19:00","가스공사","모비스"],[242,"2027-03-27","14:00","LG","삼성"],[243,"2027-03-27","14:00","KT","정관장"],[244,"2027-03-27","16:30","DB","SK"],[245,"2027-03-28","14:00","KT","가스공사"],[246,"2027-03-28","14:00","모비스","삼성"],[247,"2027-03-28","16:30","정관장","DB"],[248,"2027-03-29","19:00","SK","LG"],[249,"2027-03-30","19:00","KT","DB"],[250,"2027-03-31","19:00","삼성","소노"],[251,"2027-04-01","19:00","SK","가스공사"],[252,"2027-04-02","19:00","삼성","KCC"],[253,"2027-04-03","14:00","DB","가스공사"],[254,"2027-04-03","14:00","SK","소노"],[255,"2027-04-03","16:30","모비스","KT"],[256,"2027-04-04","14:00","LG","정관장"],[257,"2027-04-04","14:00","삼성","가스공사"],[258,"2027-04-04","16:30","KCC","모비스"],[259,"2027-04-05","19:00","소노","DB"],[260,"2027-04-06","19:00","KCC","SK"],[261,"2027-04-07","19:00","소노","모비스"],[262,"2027-04-08","19:00","정관장","가스공사"],[263,"2027-04-09","19:00","KCC","KT"],[264,"2027-04-09","19:00","LG","DB"],[265,"2027-04-09","19:00","소노","SK"],[266,"2027-04-11","14:00","소노","정관장"],[267,"2027-04-11","14:00","LG","KT"],[268,"2027-04-11","14:00","DB","모비스"],[269,"2027-04-11","14:00","SK","삼성"],[270,"2027-04-11","14:00","가스공사","KCC"]];
+const WD='일월화수목금토';
+const TEAMS=['DB','KCC','KT','LG','SK','가스공사','모비스','삼성','소노','정관장'];
+const C={DB:'#336433',KCC:'#172156',KT:'#000000',LG:'#F3DA4C',SK:'#951F2D',가스공사:'#444F9C',모비스:'#C33A33',삼성:'#324D9B',소노:'#84A2C9',정관장:'#B5342F'};
+const V={KCC:'부산사직',LG:'창원체육관',소노:'고양소노아레나',가스공사:'대구',정관장:'안양 정관장 아레나',모비스:'울산동천',DB:'원주DB프로미아레나',KT:'수원 KT 소닉붐 아레나',삼성:'잠실학생',SK:'잠실학생'};
+// 예매 규칙: [며칠 전, 시]
+const BK={DB:{g:[5,12]},삼성:{m:[['멤버십',6,11]],g:[5,11]},소노:{m:[['멤버십',8,10]],g:[7,10]},SK:{g:[5,11]},LG:{m:[['멤버십',5,10]],g:[5,15]},정관장:{m:[['블랙',7,15],['레드',6,15]],g:[5,15]},KCC:{m:[['멤버십',5,12]],g:[4,12]},KT:{g:[5,15]},가스공사:{g:[5,13]},모비스:{g:[5,14]}};
+const MEM=[];TEAMS.forEach(t=>(BK[t].m||[]).forEach(m=>MEM.push([t+'|'+m[0],m[0]==='멤버십'?t+' 멤버십':t+' '+m[0]])));
+let S={pref:[],own:[]};
+try{S=Object.assign(S,JSON.parse(localStorage.getItem('zk1')||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem('zk1',JSON.stringify(S))}catch(e){}};
+const p2=n=>String(n).padStart(2,'0');
+const key=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+const gdt=g=>{const a=g[1].split('-'),b=g[2].split(':');return new Date(+a[0],a[1]-1,+a[2],+b[0],+b[1])};
+const fmt=d=>(d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+')';
+const hm=d=>p2(d.getHours())+':'+p2(d.getMinutes());
+const rel=g=>!S.pref.length||S.pref.includes(g[3])||S.pref.includes(g[4]);
+const col=g=>C[S.pref.length&&!S.pref.includes(g[3])?g[4]:g[3]];
+function opens(g){const b=BK[g[3]],gd=gdt(g),o=[];
+ const mk=(lab,n,h)=>o.push({lab,d:new Date(gd.getFullYear(),gd.getMonth(),gd.getDate()-n,h,0)});
+ (b.m||[]).forEach(m=>{if(S.own.includes(g[3]+'|'+m[0]))mk(m[0],m[1],m[2])});
+ mk('일반',b.g[0],b.g[1]);return o.sort((a,b)=>a.d-b.d)}
+const now=new Date();
+let tab='cal',pt='cal',eid=0,lim=15,sel=key(now);
+let R={},ioText='',ioMsg='';try{R=JSON.parse(localStorage.getItem('zk2')||'{}')}catch(e){}
+const saveR=()=>{try{localStorage.setItem('zk2',JSON.stringify(R))}catch(e){}};
+const q=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+let ym=(now>=new Date(2026,9,1)&&now<new Date(2027,4,1))?[now.getFullYear(),now.getMonth()]:[2026,9];
+function idx(){const gm={},bm={};G.forEach(g=>{if(!rel(g))return;(gm[g[1]]=gm[g[1]]||[]).push(g);const e=opens(g)[0];(bm[key(e.d)]=bm[key(e.d)]||[]).push([g,e])});return{gm,bm}}
+function gameRow(g){const o=opens(g).map(e=>fmt(e.d)+' '+hm(e.d)+' '+e.lab).join(' / ');
+ return `<div class="g ${rel(g)?'':'dim'}"><span class="tm num">${g[2]}</span><span class="bar" style="background:${col(g)}"></span><div><b>${g[3]}</b> 홈 vs ${g[4]}<small>${V[g[3]]}</small><small>예매 <em>${o}</em></small>${recBadge(g)}</div><button class="chip" data-a="edit:${g[0]}">기록</button></div>`}
+function nextBar(){if(!S.pref.length)return'';const l=G.filter(g=>rel(g)&&gdt(g)>now).map(g=>[g,opens(g)[0]]).filter(x=>x[1].d>now).sort((a,b)=>a[1].d-b[1].d)[0];if(!l)return'';
+ const ms=l[1].d-now,h=Math.floor(ms/36e5),t=h>=48?Math.floor(h/24)+'일 후':h>=1?h+'시간 후':Math.max(1,Math.floor(ms/6e4))+'분 후';
+ const hl=(R[l[0][0]]||{}).ch&&!(R[l[0][0]]||{}).bk;return `<div class="next"${hl?` style="background:${col(l[0])};color:${inkOn(col(l[0]))}"`:''}><div><small>다음 예매 오픈${hl?' · 예매 도전':''}</small>${fmt(l[1].d)} ${hm(l[1].d)} · ${l[0][3]} vs ${l[0][4]} (${l[1].lab})</div><span class="num">${t}</span></div>`}
+function calView(){const{gm,bm}=idx(),y=ym[0],m=ym[1],first=new Date(y,m,1),n=new Date(y,m+1,0).getDate(),td=key(now);
+ let c=WD.split('').map(w=>`<div class="wd">${w}</div>`).join('');
+ for(let i=0;i<first.getDay();i++)c+='<div class="e"></div>';
+ for(let d=1;d<=n;d++){const k=y+'-'+p2(m+1)+'-'+p2(d);
+  c+=`<button class="d ${k===td?'t':''} ${k===sel?'s':''}" data-k="${k}" aria-label="${m+1}월 ${d}일"><b>${d}</b><span class="dots">${(gm[k]||[]).map(g=>`<i style="background:${col(g)}"></i>`).join('')}</span>${bm[k]?`<u>${bm[k].length}</u>`:''}</button>`}
+ const gs=G.filter(g=>g[1]===sel),bs=bm[sel]||[],sd=new Date(sel+'T00:00');
+ const det=`<div class="panel"><h2>${fmt(sd)} 경기 ${gs.length}</h2>${gs.map(gameRow).join('')||'<p class="note">이 날은 경기가 없어요.</p>'}</div>`+
+  (bs.length?`<div class="panel"><h2>이 날 예매 오픈 ${bs.length}</h2>${bs.map(x=>`<div class="g"><span class="tm num">${hm(x[1].d)}</span><span class="bar" style="background:var(--hot)"></span><div><b>${fmt(gdt(x[0]))} ${x[0][3]} vs ${x[0][4]}</b><small>${x[1].lab} 예매</small></div></div>`).join('')}</div>`:'');
+ const pv=y===2026&&m===9,nx=y===2027&&m===3;
+ return nextBar()+`<div class="nav"><button data-a="pm" ${pv?'disabled':''} aria-label="이전 달">‹</button><h1>${y}년 ${m+1}월</h1><button data-a="nm" ${nx?'disabled':''} aria-label="다음 달">›</button></div><div class="grid">${c}</div>`+
+  (S.pref.length?'':'<p class="note">선호 구단을 고르면 해당 팀 경기와 예매 오픈만 표시돼요.</p>')+det}
+function bookView(){if(!S.pref.length)return'<div class="panel"><h2>예매 일정</h2><p class="note">선호 구단을 먼저 골라 주세요.</p><button class="go" data-a="tab:set">내 설정으로 이동</button></div>';
+ const L=G.filter(g=>rel(g)&&gdt(g)>now).map(g=>[g,opens(g)[0]]);
+ const open=L.filter(x=>x[1].d<=now).slice(0,8),soon=L.filter(x=>x[1].d>now).sort((a,b)=>a[1].d-b[1].d);
+ const row=x=>`<div class="g"><span class="tm num" style="width:92px">${fmt(x[1].d)}<br>${hm(x[1].d)}</span><span class="bar" style="background:${col(x[0])}"></span><div><b>${x[0][3]} 홈 vs ${x[0][4]}</b><small>${fmt(gdt(x[0]))} ${x[0][2]} · ${x[1].lab} 예매</small></div><button class="chip" aria-pressed="${!!(R[x[0][0]]||{}).bk}" data-a="bkt:${x[0][0]}">예매함</button></div>`;
+ return nextBar()+`<div class="panel"><h2>오픈 예정 ${soon.length}</h2>${soon.slice(0,lim).map(row).join('')||'<p class="note">예정된 예매가 없어요.</p>'}${soon.length>lim?'<button class="more" data-a="more">더 보기</button>':''}</div>`+
+  `<div class="panel"><h2>예매 진행 중 (가까운 경기 순)</h2>${open.map(row).join('')||'<p class="note">없음</p>'}</div>`}
+function setView(){const ch=(arr,k)=>arr.map(a=>`<button class="chip" aria-pressed="${S[k].includes(a[0])}" data-a="${k}:${a[0]}">${a[2]?`<i style="background:${C[a[0]]}"></i>`:''}${a[1]}</button>`).join('');
+ return `<div class="panel"><h2>선호 구단 (여러 개 선택)</h2><div class="chips">${ch(TEAMS.map(t=>[t,t,1]),'pref')}</div></div>
+ <div class="panel"><h2>내 멤버십 (여러 개 선택)</h2><div class="chips">${ch(MEM,'own')}</div><p class="note">멤버십이 있는 구단의 홈경기는 멤버십 오픈일이 우선 표시돼요. 예매 시각은 경기일에서 N일 전을 뺀 날짜 기준이에요.</p></div>
+ <p class="note">구단 색은 각 구단 대표 색이에요. 색이 여러 개인 구단은 KT 검정, 모비스 빨강, 삼성 파랑, LG 노랑을 썼어요. 설정은 이 브라우저에 저장돼요.</p><div class="panel ed"><h2>백업 (기록·설정)</h2><div class="chips"><button class="chip" data-a="exp">내보내기</button><button class="chip" data-a="imp">가져오기</button></div><textarea id="io" rows="4" style="margin-top:8px" placeholder="내보내기를 누르면 백업 텍스트가 나와요. 복사해서 메모 앱에 보관하세요. 가져오기는 여기에 붙여 넣고 누르세요.">${q(ioText)}</textarea><p class="note">${ioMsg}</p></div>`}
+const rec=id=>(R[id]=R[id]||{bk:0,seat:'',hs:'',as:'',memo:'',total:'',pi:0,ppl:[{n:'나',a:0,p:0}]});
+const unpaid=r=>r.ppl.map((p,i)=>Object.assign({i},p)).filter(p=>p.i!==r.pi&&!p.p&&p.a>0);
+const sum=r=>{const u=unpaid(r),t=u.reduce((s,p)=>s+p.a,0),py=(r.ppl[r.pi]||{}).n||'계산한 사람';return u.length?`${py} 계산 · 미정산 ${u.length}명 ${t.toLocaleString()}원 (${u.map(p=>p.n||'이름없음').join(', ')})`:'미정산 없음'};
+function recBadge(g){const r=R[g[0]];if(!r)return'';const t=[];if(r.bk)t.push('예매함');if(r.hs!==''&&r.as!=='')t.push(r.hs+':'+r.as);const u=unpaid(r);if(u.length)t.push('미정산 '+u.length+'명');return t.length?`<small><em>${t.join(' · ')}</em></small>`:''}
+function edView(){const g=G.find(x=>x[0]===eid),r=rec(eid),d=gdt(g);
+ const pr=r.ppl.map((p,i)=>`<div class="row"><button class="chip" aria-pressed="${r.pi===i}" data-a="payer:${i}">계산</button><input data-f="pn:${i}" value="${q(p.n)}" placeholder="이름" aria-label="이름"><input data-f="pa:${i}" type="number" inputmode="numeric" value="${p.a||''}" placeholder="부담금" aria-label="부담금"><button class="chip" aria-pressed="${r.pi===i||!!p.p}" data-a="paid:${i}" ${r.pi===i?'disabled':''}>입금</button><button class="x" data-a="del:${i}" aria-label="삭제">×</button></div>`).join('');
+ return `<div class="nav"><button data-a="back" aria-label="뒤로">‹</button><h1 style="font-size:17px">${fmt(d)} ${g[3]} vs ${g[4]}</h1><span style="width:44px"></span></div>
+<div class="panel ed"><h2>예매·좌석</h2><div class="chips" style="margin-bottom:8px"><button class="chip" aria-pressed="${!!r.bk}" data-a="bkr">예매함</button></div><input data-f="seat" value="${q(r.seat)}" placeholder="좌석 (예: 2층 204구역 5열)"></div>
+<div class="panel ed"><h2>스코어</h2><div class="row"><span>${g[3]}</span><input data-f="hs" type="number" inputmode="numeric" value="${q(r.hs)}" style="text-align:center" aria-label="${g[3]} 점수"><span>:</span><input data-f="as" type="number" inputmode="numeric" value="${q(r.as)}" style="text-align:center" aria-label="${g[4]} 점수"><span>${g[4]}</span></div>${scNote(g)}</div>
+<div class="panel ed"><h2>한줄평</h2><textarea data-f="memo" rows="3" placeholder="오늘 경기는…">${q(r.memo)}</textarea></div>
+<div class="panel ed"><h2>정산</h2><input data-f="total" type="number" inputmode="numeric" value="${q(r.total)}" placeholder="총 결제 금액"><div class="chips" style="margin:8px 0"><button class="chip" data-a="split">총액 N등분</button><button class="chip" data-a="add">사람 추가</button></div>${pr}<p class="note" id="sum">${sum(r)}</p><p class="note">계산은 결제한 사람, 입금은 그 사람에게 보냈는지 체크예요.</p></div>`}
+function stView(){const L=Object.keys(R).map(id=>[G.find(x=>x[0]==id),R[id]]).filter(x=>x[0]&&unpaid(x[1]).length).sort((a,b)=>gdt(a[0])-gdt(b[0]));let get=0,give=0;
+ L.forEach(x=>{const py=x[1].ppl[x[1].pi]||{};unpaid(x[1]).forEach(p=>{if(py.n==='나')get+=p.a;else if(p.n==='나')give+=p.a})});
+ return `<div class="next"><div><small>받을 돈</small><span class="num">${get.toLocaleString()}원</span></div><div><small>줄 돈</small><span class="num">${give.toLocaleString()}원</span></div></div>`+(L.map(x=>`<div class="panel"><h2>${fmt(gdt(x[0]))} ${x[0][3]} vs ${x[0][4]} · ${(x[1].ppl[x[1].pi]||{}).n||'?'} 계산</h2>${unpaid(x[1]).map(p=>`<div class="g"><div style="flex:1"><b>${q(p.n)||'이름없음'}</b> ${p.a.toLocaleString()}원</div><button class="chip" data-a="spaid:${x[0][0]}-${p.i}">입금 확인</button></div>`).join('')}<button class="more" data-a="edit:${x[0][0]}">기록 열기</button></div>`).join('')||'<div class="panel"><p class="note">미정산 내역이 없어요. 직관 기록에서 계산한 사람과 부담금을 입력하면 여기에 모여요.</p></div>')}
+function editAct(a,v){
+ if(a==='edit'){pt=tab==='ed'?pt:tab;tab='ed';eid=+v;rec(eid);window.scrollTo(0,0);return 1}
+ if(a==='back'){tab=pt;return 1}
+ if(a==='bkt'){const x=rec(+v);x.bk=x.bk?0:1;saveR();return 1}
+ if(a==='spaid'){const t=v.split('-');rec(+t[0]).ppl[+t[1]].p=1;saveR();return 1}
+ if(a==='exp'){ioText=JSON.stringify({S:S,R:R});ioMsg='';return 1}
+ if(a==='imp'){try{const o=JSON.parse(document.getElementById('io').value);if(o.S)S=o.S;if(o.R)R=o.R;save();saveR();ioText='';ioMsg='가져왔어요.'}catch(e){ioMsg='백업 텍스트를 읽지 못했어요. 내용을 확인해 주세요.'}return 1}
+ if(tab!=='ed')return 0;const r=rec(eid);
+ if(a==='bkr')r.bk=r.bk?0:1;else if(a==='add')r.ppl.push({n:'',a:0,p:0});
+ else if(a==='del'){if(r.ppl.length>1){r.ppl.splice(+v,1);if(r.pi>=r.ppl.length)r.pi=0}}
+ else if(a==='payer')r.pi=+v;else if(a==='paid')r.ppl[+v].p=r.ppl[+v].p?0:1;
+ else if(a==='split'){const n=r.ppl.length||1;r.ppl.forEach(p=>p.a=Math.round((+r.total||0)/n))}else return 0;
+ saveR();return 1}
+document.addEventListener('input',e=>{const f=e.target.dataset.f;if(!f||tab!=='ed')return;const r=rec(eid),k=f.split(':');
+ if(k[0]==='pn')r.ppl[+k[1]].n=e.target.value;else if(k[0]==='pa')r.ppl[+k[1]].a=+e.target.value||0;else r[k[0]]=e.target.value;
+ saveR();const s=document.getElementById('sum');if(s)s.textContent=sum(r)});
+function render(){const v=tab==='cal'?calView():tab==='bk'?bookView():tab==='st'?stView():tab==='ed'?edView():setView();document.getElementById('app').innerHTML=v;
+ document.getElementById('tabs').innerHTML=[['cal','달력'],['bk','예매'],['st','정산'],['set','내 설정']].map(t=>`<button data-a="tab:${t[0]}" ${(tab==='ed'?pt:tab)===t[0]?'aria-current="true"':''}>${t[1]}</button>`).join('')}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-k],[data-a]');if(!b)return;
+ if(b.dataset.k){sel=b.dataset.k;render();return}
+ const[a,v]=b.dataset.a.split(':');
+ if(a==='tab'){tab=v;lim=15}else if(editAct(a,v)){}else if(a==='pm'||a==='nm'){const d=new Date(ym[0],ym[1]+(a==='pm'?-1:1),1);ym=[d.getFullYear(),d.getMonth()]}
+ else if(a==='more')lim+=20;
+ else if(a==='pref'||a==='own'){const i=S[a].indexOf(v);i<0?S[a].push(v):S[a].splice(i,1);save()}
+ render()});
+render();
+</script><style>
+a.chip{text-decoration:none;color:inherit}
+.g.hl{background:var(--hc);color:var(--ht);border-radius:10px;padding:10px;margin:4px 0;border-top:0}.g.hl+.g{border-top:0}
+.g.hl small,.g.hl em{color:var(--ht);opacity:.85}.g.hl .bar{background:var(--ht)!important;opacity:.5}
+.g.hl .chip{background:transparent;border-color:var(--ht);color:var(--ht)}.g.hl .chip[aria-pressed="true"]{background:var(--ht);color:var(--hc)}.d u.c{right:auto;left:2px;bottom:2px;font:700 9px/1 'Noto Sans KR',sans-serif;padding:2px 3px;border-radius:3px;letter-spacing:-.03em}.d u:not(.c){bottom:auto;top:2px}button.g{width:100%;text-align:left}
+.ed select{flex:1;min-width:0;font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:8px;padding:0 8px;min-height:44px}
+</style>
+<script>
+S.fr=S.fr||[];
+const inkOn=h=>{const n=parseInt(h.slice(1),16),r=n>>16,g=n>>8&255,b=n&255;return (0.299*r+0.587*g+0.114*b)>150?'#101828':'#ffffff'};
+// 좌석 가격표 [평일, 주말] (원). 구장별 표값은 알려주시는 대로 채워요.
+const PR={소노:{R석:[31000,36000]},SK:{특석:[20000,20000]},삼성:{특석:[20000,20000],P석:[50000,50000]},정관장:{S석:[28000,28000]},KT:{R석:[26000,28000],'KT 프리미엄석':[50000,52000],'레드플레이어석':[50000,52000]}};
+const fee=t=>t.f==null?1000:t.f,tk=t=>(t.u||0)+fee(t);
+const pl=t=>OPT().filter(n=>n!==t.b).concat(t.ps.map(p=>p.n).filter(n=>!OPT().includes(n)));
+const OPT=()=>['나'].concat(S.fr);
+const unp=r=>(r.it||[]).reduce((n,t)=>n+t.ps.filter(p=>!p.p).length,0);
+const amtTxt=t=>`1매 ${tk(t).toLocaleString()}원 (가격 ${(t.u||0).toLocaleString()} + 수수료 ${fee(t).toLocaleString()}) · 총 ${(t.q*tk(t)).toLocaleString()}원`+(t.ps.length?` · 미입금 ${t.ps.filter(p=>!p.p).length}명 ${(t.ps.filter(p=>!p.p).length*tk(t)).toLocaleString()}원`:'');
+function recBadge(g){const r=R[g[0]];if(!r)return'';const t=[];if(r.bk)t.push('예매 완료');else if(r.ch)t.push('예매 도전');if(r.hs!==''&&r.as!=='')t.push(r.hs+':'+r.as);const u=unp(r);if(u)t.push('미정산 '+u+'명');return t.length?`<small><em>${t.join(' · ')}</em></small>`:''}
+function gameRow(g){const o=opens(g).map(e=>fmt(e.d)+' '+hm(e.d)+' '+e.lab).join(' / ');
+ return `<div class="g ${rel(g)?'':'dim'}"><span class="tm num">${g[2]}</span><span class="bar" style="background:${col(g)}"></span><div style="flex:1"><b>${g[3]}</b> 홈 vs ${g[4]}<small>${V[g[3]]}</small><small>예매 <em>${o}</em></small>${recBadge(g)}</div><div style="display:flex;flex-direction:column;gap:6px"><button class="chip" data-a="bp:${g[0]}">예매</button><button class="chip" data-a="edit:${g[0]}">기록</button></div></div>`}
+function todayCard(){const k=key(now),ip=g=>S.pref.includes(g[3])||S.pref.includes(g[4]),gs=G.filter(g=>g[1]===k).sort((a,b)=>ip(b)-ip(a));
+ if(!gs.length)return '<div class="panel" style="margin:0 0 12px"><h2>오늘 경기</h2><p class="note" style="margin:0">오늘은 경기가 없어요.</p></div>';
+ return `<div class="panel" style="margin:0 0 12px"><h2>오늘 경기 ${fmt(now)}</h2>${gs.map(g=>`<div class="g${ip(g)?' hl':''}"${ip(g)?` style="--hc:${col(g)};--ht:${inkOn(col(g))}"`:''}><span class="tm num">${g[2]}</span><span class="bar" style="background:${col(g)}"></span><div style="flex:1"><b>${g[3]}</b> 홈 vs ${g[4]}<small>${V[g[3]]}</small>${recBadge(g)}</div><button class="chip" data-a="edit:${g[0]}">기록</button></div>`).join('')}</div>`}
+function calView(){const{gm,bm}=idx(),y=ym[0],m=ym[1],first=new Date(y,m,1),n=new Date(y,m+1,0).getDate(),td=key(now);
+ let c=WD.split('').map(w=>`<div class="wd">${w}</div>`).join('');
+ for(let i=0;i<first.getDay();i++)c+='<div class="e"></div>';
+ for(let d=1;d<=n;d++){const k=y+'-'+p2(m+1)+'-'+p2(d),ch2=(bm[k]||[]).filter(x=>{const r=R[x[0][0]]||{};return r.ch&&!r.bk}),cc=ch2.length,tc=cc?col(ch2[0][0]):'#000',oo=(bm[k]||[]).length-cc;
+  c+=`<button class="d ${k===td?'t':''} ${k===sel?'s':''}" data-k="${k}" aria-label="${m+1}월 ${d}일"><b>${d}</b><span class="dots">${(gm[k]||[]).map(g=>`<i style="background:${col(g)}"></i>`).join('')}</span>${cc?`<u class="c" style="background:${tc};color:${inkOn(tc)}">티켓팅${cc>1?cc:''}</u>`:''}</button>`}
+ const gs=G.filter(g=>g[1]===sel),bs=bm[sel]||[],sd=new Date(sel+'T00:00');
+ const det=`<div class="panel"><h2>${fmt(sd)} 경기 ${gs.length}</h2>${gs.map(gameRow).join('')||'<p class="note">이 날은 경기가 없어요.</p>'}</div>`+
+  (bs.length?`<div class="panel"><h2>이 날 예매 오픈 ${bs.length}</h2>${bs.map(x=>`<button class="g" data-a="bp:${x[0][0]}"><span class="tm num">${hm(x[1].d)}</span><span class="bar" style="background:var(--hot)"></span><div style="flex:1"><b>${fmt(gdt(x[0]))} ${x[0][3]} vs ${x[0][4]}</b><small>${x[1].lab} 예매 · 눌러서 예매·정산 열기</small>${recBadge(x[0])}</div><span aria-hidden="true">›</span></button>`).join('')}</div>`:'');
+ const pv=y===2026&&m===9,nx=y===2027&&m===3;
+ return nextBar()+todayCard()+chView()+`<div class="nav"><button data-a="pm" ${pv?'disabled':''} aria-label="이전 달">‹</button><h1>${y}년 ${m+1}월</h1><button data-a="nm" ${nx?'disabled':''} aria-label="다음 달">›</button></div><div class="grid">${c}</div>`+
+  (S.pref.length?'':'<p class="note">선호 구단을 고르면 해당 팀 경기와 예매 오픈만 표시돼요.</p>')+det}
+function chView(){const L=G.filter(g=>(R[g[0]]||{}).ch&&!(R[g[0]]||{}).bk&&gdt(g)>now).map(g=>[g,opens(g)[0]]).sort((a,b)=>a[1].d-b[1].d);
+ if(!L.length)return'';
+ return `<div class="panel"><h2>예매 도전 일정 ${L.length}</h2>${L.map(x=>`<button class="g hl" style="--hc:${col(x[0])};--ht:${inkOn(col(x[0]))}" data-a="bp:${x[0][0]}"><span class="tm num" style="width:92px">${x[1].d<=now?'오픈됨':fmt(x[1].d)+'<br>'+hm(x[1].d)}</span><span class="bar" style="background:${col(x[0])}"></span><div style="flex:1"><b>${x[0][3]} 홈 vs ${x[0][4]}</b><small>${fmt(gdt(x[0]))} ${x[0][2]} · ${x[1].lab} 예매</small></div><span aria-hidden="true">›</span></button>`).join('')}</div>`}
+function money(){let get=0,give=0;Object.keys(R).forEach(id=>(R[id].it||[]).forEach(t=>t.ps.forEach(p=>{if(p.p)return;if(t.b==='나')get+=tk(t);else if(p.n==='나')give+=tk(t)})));
+ return get||give?`<div class="next"><div><small>받을 돈</small><span class="num">${get.toLocaleString()}원</span></div><div><small>줄 돈</small><span class="num">${give.toLocaleString()}원</span></div></div>`:''}
+function bookView(){if(!S.pref.length)return'<div class="panel"><h2>예매 일정</h2><p class="note">선호 구단을 먼저 골라 주세요.</p><button class="go" data-a="tab:set">내 설정으로 이동</button></div>';
+ const L=G.filter(g=>rel(g)&&gdt(g)>now).map(g=>[g,opens(g)[0]]);
+ const open=L.filter(x=>x[1].d<=now).slice(0,8),soon=L.filter(x=>x[1].d>now).sort((a,b)=>a[1].d-b[1].d);
+ const row=(x,live)=>{const r=R[x[0][0]]||{},hl=r.ch&&!r.bk;return `<div class="g${hl?' hl':''}"${hl?` style="--hc:${col(x[0])};--ht:${inkOn(col(x[0]))}"`:''}><span class="tm num" style="width:92px">${fmt(x[1].d)}<br>${hm(x[1].d)}</span><span class="bar" style="background:${col(x[0])}"></span><div style="flex:1"><b>${x[0][3]} 홈 vs ${x[0][4]}</b><small>${fmt(gdt(x[0]))} ${x[0][2]} · ${x[1].lab} 예매</small>${recBadge(x[0])}<div class="chips" style="margin-top:6px">${live?'':`<button class="chip" aria-pressed="${!!r.ch}" data-a="ch:${x[0][0]}">예매 도전</button>`}<button class="chip" aria-pressed="${!!r.bk}" data-a="done:${x[0][0]}">예매 완료</button></div></div></div>`};
+ return nextBar()+money()+`<div class="panel"><h2>오픈 예정 ${soon.length}</h2>${soon.slice(0,lim).map(x=>row(x,0)).join('')||'<p class="note">예정된 예매가 없어요.</p>'}${soon.length>lim?'<button class="more" data-a="more">더 보기</button>':''}</div><div class="panel"><h2>예매 진행 중 (가까운 경기 순)</h2>${open.map(x=>row(x,1)).join('')||'<p class="note">없음</p>'}</div>`}
+function edView(){const g=G.find(x=>x[0]===eid),r=rec(eid);
+ return `<div class="nav"><button data-a="back" aria-label="뒤로">‹</button><h1 style="font-size:17px">${fmt(gdt(g))} ${g[3]} vs ${g[4]}</h1><button class="chip" data-a="bp:${eid}">예매·정산</button></div>
+<div class="panel ed"><h2>스코어</h2><div class="row"><span>${g[3]}</span><input data-f="hs" type="number" inputmode="numeric" value="${q(r.hs)}" style="text-align:center" aria-label="${g[3]} 점수"><span>:</span><input data-f="as" type="number" inputmode="numeric" value="${q(r.as)}" style="text-align:center" aria-label="${g[4]} 점수"><span>${g[4]}</span></div>${scNote(g)}</div>
+<div class="panel ed"><h2>한줄평</h2><textarea data-f="memo" rows="3" placeholder="오늘 경기는…">${q(r.memo)}</textarea></div>`}
+function bpView(){const g=G.find(x=>x[0]===eid),r=rec(eid);r.it=r.it||[];if(!r.it.length){r.it.push({b:'나',z:'',s:'',q:1,u:0,f:1000,ps:[]});saveR()}const O=OPT(),zs=Object.keys(PR[g[3]]||{}),wk=gdt(g).getDay()%6===0;
+ const items=r.it.map((t,i)=>`<div class="panel ed"><div class="row" style="justify-content:space-between;margin:0 0 8px"><h2 style="margin:0">예매 ${i+1}</h2><button class="x" data-a="di:${i}" aria-label="삭제">×</button></div>
+<p class="note" style="margin:0 0 4px">예매자</p><div class="chips">${O.map((n,j)=>`<button class="chip" aria-pressed="${t.b===n}" data-a="sb:${i}-${j}">${q(n)}</button>`).join('')}</div>
+<p class="note" style="margin:10px 0 4px">좌석</p><div class="row" style="margin:0"><select data-f="z:${i}" aria-label="좌석 등급"><option value="">등급 선택</option>${zs.map(z=>`<option ${t.z===z?'selected':''}>${z}</option>`).join('')}</select><input data-f="s:${i}" value="${q(t.s)}" placeholder="구역·열 (선택)" aria-label="구역과 열"></div>
+<p class="note" style="margin:10px 0 4px">매수와 1매 가격 (수수료 제외, ${wk?'주말':'평일'} 기준)</p><div class="row" style="margin:0"><button class="chip" data-a="qm:${i}" aria-label="한 장 줄이기">−</button><b class="num" style="min-width:2em;text-align:center">${t.q}</b><button class="chip" data-a="qp:${i}" aria-label="한 장 늘리기">+</button><input data-f="u:${i}" type="number" inputmode="numeric" value="${t.u||''}" placeholder="직접 입력" aria-label="1매 가격"><span>원</span></div>
+<div class="row" style="margin:6px 0 0"><span>예매 수수료 1매당</span><input data-f="f:${i}" type="number" inputmode="numeric" value="${fee(t)}" aria-label="예매 수수료" style="max-width:110px"><span>원</span></div><p class="note" id="amt${i}" style="margin:6px 0 0">${amtTxt(t)}</p>
+<p class="note" style="margin:10px 0 4px">같이 가는 사람 (예매자 제외, 1인 1매)</p><div class="chips">${pl(t).map((n,j)=>`<button class="chip" aria-pressed="${t.ps.some(p=>p.n===n)}" data-a="sp:${i}-${j}">${q(n)}</button>`).join('')}</div><div class="row"><input id="np${i}" placeholder="이름 직접 입력" aria-label="같이 가는 사람 이름"><button class="chip" data-a="pa:${i}">추가</button></div>
+${t.ps.length?`<p class="note" style="margin:10px 0 4px">정산 (${q(t.b)}에게 입금)</p><div class="chips">${t.ps.map((p,k)=>`<button class="chip" aria-pressed="${!!p.p}" data-a="sd:${i}-${k}">${q(p.n)} ${tk(t).toLocaleString()}원 ${p.p?'입금 완료':'미입금'}</button>`).join('')}</div>`:''}</div>`).join('');
+ return `<div class="nav"><button data-a="back" aria-label="뒤로">‹</button><h1 style="font-size:17px">${fmt(gdt(g))} ${g[3]} vs ${g[4]}</h1><button class="chip" data-a="edit:${eid}">기록</button></div>
+<div class="panel ed"><h2>예매 상태</h2><button class="chip" aria-pressed="${!!r.bk}" data-a="bkr">예매 완료</button></div>${items}<button class="more" data-a="ai">예매 건 추가</button>`}
+function setView2(){const fr=`<div class="panel ed"><h2>자주 가는 친구</h2><div class="chips">${S.fr.map((n,i)=>`<button class="chip" data-a="fdel:${i}" aria-label="${q(n)} 삭제">${q(n)} ×</button>`).join('')||'<span class="note">아직 없어요.</span>'}</div><div class="row"><input id="fn" placeholder="이름 입력" aria-label="친구 이름"><button class="chip" data-a="fadd">추가</button></div><p class="note">예매·정산 화면에서 예매자와 같이 가는 사람으로 고를 수 있어요. 내 이름은 나로 고정이에요.</p></div>`;
+ return setView().replace('<div class="panel ed"><h2>백업',fr+'<div class="panel ed"><h2>백업')}
+function editAct(a,v){
+ if(a==='edit'||a==='bp'){pt=(tab==='ed'||tab==='bp')?pt:tab;tab=a==='bp'?'bp':'ed';eid=+v;rec(eid);window.scrollTo(0,0);return 1}
+ if(a==='ch'){const x=rec(+v);x.ch=x.ch?0:1;saveR();return 1}
+ if(a==='usesc'){const g=G.find(x=>x[0]===eid),s=SC[scKey(g)];if(s){const r=rec(eid);r.hs=s.hs;r.as=s.as;saveR()}return 1}
+ if(a==='done'){rec(+v).bk=1;saveR();pt=tab;tab='bp';eid=+v;window.scrollTo(0,0);return 1}
+ if(a==='back'){tab=pt;return 1}
+ if(a==='fadd'){const n=document.getElementById('fn').value.trim();if(n&&n!=='나'&&!S.fr.includes(n)){S.fr.push(n);save()}return 1}
+ if(a==='fdel'){S.fr.splice(+v,1);save();return 1}
+ if(a==='exp'){ioText=JSON.stringify({S:S,R:R});ioMsg='';return 1}
+ if(a==='imp'){try{const o=JSON.parse(document.getElementById('io').value);if(o.S)S=Object.assign({pref:[],own:[],fr:[]},o.S);if(o.R)R=o.R;save();saveR();ioText='';ioMsg='가져왔어요.'}catch(e){ioMsg='백업 텍스트를 읽지 못했어요. 내용을 확인해 주세요.'}return 1}
+ if(tab!=='bp')return 0;
+ const r=rec(eid);r.it=r.it||[];const sp=String(v).split('-'),t=r.it[+sp[0]],j=+sp[1];
+ if(a==='bkr')r.bk=r.bk?0:1;else if(a==='ai')r.it.push({b:'나',z:'',s:'',q:1,u:0,f:1000,ps:[]});else if(a==='di')r.it.splice(+v,1);
+ else if(!t)return 0;
+ else if(a==='sb'){t.b=OPT()[j];t.ps=t.ps.filter(p=>p.n!==t.b)}
+ else if(a==='sp'){const n=pl(t)[j],k=t.ps.findIndex(p=>p.n===n);k<0?t.ps.push({n:n,p:0}):t.ps.splice(k,1)}
+ else if(a==='pa'){const el=document.getElementById('np'+sp[0]),n=((el&&el.value)||'').trim();if(n&&n!==t.b&&!t.ps.some(p=>p.n===n))t.ps.push({n:n,p:0})}
+ else if(a==='sd')t.ps[j].p=t.ps[j].p?0:1;else if(a==='qm')t.q=Math.max(1,t.q-1);else if(a==='qp')t.q=Math.min(20,t.q+1);else return 0;
+ saveR();return 1}
+document.addEventListener('input',e=>{const f=e.target.dataset.f;if(!f||tab!=='bp')return;const k=f.split(':'),t=(rec(eid).it||[])[+k[1]];if(!t)return;
+ if(k[0]==='u')t.u=+e.target.value||0;else if(k[0]==='f')t.f=+e.target.value||0;else if(k[0]==='s')t.s=e.target.value;else return;
+ saveR();const a=document.getElementById('amt'+k[1]);if(a)a.textContent=amtTxt(t)});
+document.addEventListener('change',e=>{const f=e.target.dataset.f;if(!f||tab!=='bp')return;const k=f.split(':');if(k[0]!=='z')return;
+ const g=G.find(x=>x[0]===eid),t=rec(eid).it[+k[1]],p=(PR[g[3]]||{})[e.target.value];t.z=e.target.value;if(p)t.u=gdt(g).getDay()%6===0?p[1]:p[0];saveR();render()});
+function render(){const v=tab==='cal'?calView():tab==='bk'?bookView():tab==='ed'?edView():tab==='bp'?bpView():setView2();document.getElementById('app').innerHTML=v;
+ document.getElementById('tabs').innerHTML=[['cal','달력'],['bk','예매'],['set','내 설정']].map(t=>`<button data-a="tab:${t[0]}" ${((tab==='ed'||tab==='bp')?pt:tab)===t[0]?'aria-current="true"':''}>${t[1]}</button>`).join('')}
+let SC={};
+const scKey=g=>g[1]+'|'+g[3]+'|'+g[4];
+const scNote=g=>{const s=SC[scKey(g)];return s&&s.final?`<p class="note">자동 스코어 ${s.hs}:${s.as} <button class="chip" data-a="usesc">적용</button></p>`:''};
+try{fetch('scores.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{if(j&&j.games){j.games.forEach(s=>{SC[s.date+'|'+s.home+'|'+s.away]=s});render()}}).catch(()=>{})}catch(e){}
+render();
+</script>
+</body></html>
