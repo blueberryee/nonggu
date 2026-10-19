@@ -1,0 +1,45 @@
+{
+  "checkedAt": "2026-10-19T04:43:03.371Z",
+  "results": [
+    {
+      "name": "match-list",
+      "url": "https://api.kbl.or.kr/match/list",
+      "status": 400,
+      "contentType": "application/json;charset=UTF-8",
+      "length": 83,
+      "sample": "{\"resultCode\":\"Fail\",\"message\":\"필수 헤더 정보가 누락되었습니다.\",\"object\":-1101,\"errorCode\":400}"
+    },
+    {
+      "name": "match-list-date",
+      "url": "https://api.kbl.or.kr/match/list?date=2026-10-19",
+      "status": 400,
+      "contentType": "application/json;charset=UTF-8",
+      "length": 83,
+      "sample": "{\"resultCode\":\"Fail\",\"message\":\"필수 헤더 정보가 누락되었습니다.\",\"object\":-1101,\"errorCode\":400}"
+    },
+    {
+      "name": "match-list-gameDate",
+      "url": "https://api.kbl.or.kr/match/list?gameDate=20261019",
+      "status": 400,
+      "contentType": "application/json;charset=UTF-8",
+      "length": 83,
+      "sample": "{\"resultCode\":\"Fail\",\"message\":\"필수 헤더 정보가 누락되었습니다.\",\"object\":-1101,\"errorCode\":400}"
+    },
+    {
+      "name": "match-list-matchDate",
+      "url": "https://api.kbl.or.kr/match/list?matchDate=2026-10-19",
+      "status": 400,
+      "contentType": "application/json;charset=UTF-8",
+      "length": 83,
+      "sample": "{\"resultCode\":\"Fail\",\"message\":\"필수 헤더 정보가 누락되었습니다.\",\"object\":-1101,\"errorCode\":400}"
+    },
+    {
+      "name": "team-rank",
+      "url": "https://api.kbl.or.kr/league/rank/team",
+      "status": 400,
+      "contentType": "application/json;charset=UTF-8",
+      "length": 83,
+      "sample": "{\"resultCode\":\"Fail\",\"message\":\"필수 헤더 정보가 누락되었습니다.\",\"object\":-1101,\"errorCode\":400}"
+    }
+  ]
+}
