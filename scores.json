@@ -1,1 +1,229 @@
-{"updated":null,"games":[]}
+{
+ "updated": "2026-10-19T04:53:54.302Z",
+ "games": [
+  {
+   "date": "2026-10-03",
+   "home": "KCC",
+   "away": "LG",
+   "hs": 68,
+   "as": 103,
+   "final": true
+  },
+  {
+   "date": "2026-10-03",
+   "home": "소노",
+   "away": "가스공사",
+   "hs": 82,
+   "as": 73,
+   "final": true
+  },
+  {
+   "date": "2026-10-03",
+   "home": "정관장",
+   "away": "모비스",
+   "hs": 88,
+   "as": 85,
+   "final": true
+  },
+  {
+   "date": "2026-10-04",
+   "home": "DB",
+   "away": "소노",
+   "hs": 95,
+   "as": 86,
+   "final": true
+  },
+  {
+   "date": "2026-10-04",
+   "home": "KT",
+   "away": "삼성",
+   "hs": 76,
+   "as": 81,
+   "final": true
+  },
+  {
+   "date": "2026-10-05",
+   "home": "가스공사",
+   "away": "정관장",
+   "hs": 80,
+   "as": 86,
+   "final": true
+  },
+  {
+   "date": "2026-10-05",
+   "home": "모비스",
+   "away": "KCC",
+   "hs": 87,
+   "as": 97,
+   "final": true
+  },
+  {
+   "date": "2026-10-06",
+   "home": "KT",
+   "away": "LG",
+   "hs": 97,
+   "as": 72,
+   "final": true
+  },
+  {
+   "date": "2026-10-07",
+   "home": "KCC",
+   "away": "가스공사",
+   "hs": 103,
+   "as": 98,
+   "final": true
+  },
+  {
+   "date": "2026-10-08",
+   "home": "DB",
+   "away": "LG",
+   "hs": 92,
+   "as": 96,
+   "final": true
+  },
+  {
+   "date": "2026-10-09",
+   "home": "KT",
+   "away": "소노",
+   "hs": 88,
+   "as": 79,
+   "final": true
+  },
+  {
+   "date": "2026-10-09",
+   "home": "삼성",
+   "away": "정관장",
+   "hs": 66,
+   "as": 58,
+   "final": true
+  },
+  {
+   "date": "2026-10-10",
+   "home": "KCC",
+   "away": "DB",
+   "hs": 79,
+   "as": 85,
+   "final": true
+  },
+  {
+   "date": "2026-10-10",
+   "home": "모비스",
+   "away": "가스공사",
+   "hs": 75,
+   "as": 81,
+   "final": true
+  },
+  {
+   "date": "2026-10-11",
+   "home": "KCC",
+   "away": "KT",
+   "hs": 81,
+   "as": 87,
+   "final": true
+  },
+  {
+   "date": "2026-10-11",
+   "home": "삼성",
+   "away": "소노",
+   "hs": 82,
+   "as": 81,
+   "final": true
+  },
+  {
+   "date": "2026-10-11",
+   "home": "정관장",
+   "away": "LG",
+   "hs": 88,
+   "as": 65,
+   "final": true
+  },
+  {
+   "date": "2026-10-12",
+   "home": "모비스",
+   "away": "DB",
+   "hs": 99,
+   "as": 89,
+   "final": true
+  },
+  {
+   "date": "2026-10-13",
+   "home": "정관장",
+   "away": "소노",
+   "hs": 85,
+   "as": 81,
+   "final": true
+  },
+  {
+   "date": "2026-10-14",
+   "home": "가스공사",
+   "away": "KT",
+   "hs": 82,
+   "as": 69,
+   "final": true
+  },
+  {
+   "date": "2026-10-15",
+   "home": "삼성",
+   "away": "LG",
+   "hs": 93,
+   "as": 86,
+   "final": true
+  },
+  {
+   "date": "2026-10-16",
+   "home": "소노",
+   "away": "모비스",
+   "hs": 95,
+   "as": 82,
+   "final": true
+  },
+  {
+   "date": "2026-10-17",
+   "home": "DB",
+   "away": "삼성",
+   "hs": 92,
+   "as": 95,
+   "final": true
+  },
+  {
+   "date": "2026-10-17",
+   "home": "가스공사",
+   "away": "LG",
+   "hs": 85,
+   "as": 75,
+   "final": true
+  },
+  {
+   "date": "2026-10-17",
+   "home": "정관장",
+   "away": "KT",
+   "hs": 89,
+   "as": 69,
+   "final": true
+  },
+  {
+   "date": "2026-10-18",
+   "home": "KT",
+   "away": "모비스",
+   "hs": 80,
+   "as": 96,
+   "final": true
+  },
+  {
+   "date": "2026-10-18",
+   "home": "SK",
+   "away": "소노",
+   "hs": 81,
+   "as": 87,
+   "final": true
+  },
+  {
+   "date": "2026-10-18",
+   "home": "정관장",
+   "away": "KCC",
+   "hs": 81,
+   "as": 74,
+   "final": true
+  }
+ ]
+}
