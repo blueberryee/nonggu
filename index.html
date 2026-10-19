@@ -72,6 +72,7 @@ const fmt=d=>(d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+')';
 const hm=d=>p2(d.getHours())+':'+p2(d.getMinutes());
 const rel=g=>!S.pref.length||S.pref.includes(g[3])||S.pref.includes(g[4]);
 const col=g=>C[g[3]];
+const twoB=g=>`linear-gradient(180deg,${C[g[3]]} 50%,${C[g[4]]} 50%)`;
 const two=g=>`linear-gradient(90deg,${C[g[3]]} 50%,${C[g[4]]} 50%)`;
 function opens(g){const b=BK[g[3]],gd=gdt(g),o=[];
  const mk=(lab,n,h)=>o.push({lab,d:new Date(gd.getFullYear(),gd.getMonth(),gd.getDate()-n,h,0)});
@@ -85,7 +86,7 @@ const q=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').rep
 let ym=(now>=new Date(2026,9,1)&&now<new Date(2027,4,1))?[now.getFullYear(),now.getMonth()]:[2026,9];
 function idx(){const gm={},bm={};G.forEach(g=>{if(!rel(g))return;(gm[g[1]]=gm[g[1]]||[]).push(g);const e=opens(g)[0];(bm[key(e.d)]=bm[key(e.d)]||[]).push([g,e])});return{gm,bm}}
 function gameRow(g){const o=opens(g).map(e=>fmt(e.d)+' '+hm(e.d)+' '+e.lab).join(' / ');
- return `<div class="g ${rel(g)?'':'dim'}"><span class="tm num">${g[2]}</span><span class="bar" style="background:${two(g)}"></span><div><b>${g[3]}</b> 홈 vs ${g[4]}<small>${V[g[3]]}</small><small>예매 <em>${o}</em></small>${recBadge(g)}</div><button class="chip" data-a="edit:${g[0]}">기록</button></div>`}
+ return `<div class="g ${rel(g)?'':'dim'}"><span class="tm num">${g[2]}</span><span class="bar" style="background:${twoB(g)}"></span><div><b>${g[3]}</b> 홈 vs ${g[4]}<small>${V[g[3]]}</small><small>예매 <em>${o}</em></small>${recBadge(g)}</div><button class="chip" data-a="edit:${g[0]}">기록</button></div>`}
 function nextBar(){if(!S.pref.length)return'';const l=G.filter(g=>rel(g)&&gdt(g)>now).map(g=>[g,opens(g)[0]]).filter(x=>x[1].d>now).sort((a,b)=>a[1].d-b[1].d)[0];if(!l)return'';
  const ms=l[1].d-now,h=Math.floor(ms/36e5),t=h>=48?Math.floor(h/24)+'일 후':h>=1?h+'시간 후':Math.max(1,Math.floor(ms/6e4))+'분 후';
  const hl=(R[l[0][0]]||{}).ch&&!(R[l[0][0]]||{}).bk;return `<div class="next"${hl?` style="background:${col(l[0])};color:${inkOn(col(l[0]))}"`:''}><div><small>다음 예매 오픈${hl?' · 예매 도전':''}</small>${fmt(l[1].d)} ${hm(l[1].d)} · ${l[0][3]} vs ${l[0][4]} (${l[1].lab})</div><span class="num">${t}</span></div>`}
@@ -169,10 +170,10 @@ const unp=r=>(r.it||[]).reduce((n,t)=>n+t.ps.filter(p=>!p.p).length,0);
 const amtTxt=t=>`1매 ${tk(t).toLocaleString()}원 (가격 ${(t.u||0).toLocaleString()} + 수수료 ${fee(t).toLocaleString()}) · 총 ${(t.q*tk(t)).toLocaleString()}원`+(t.ps.length?` · 미입금 ${t.ps.filter(p=>!p.p).length}명 ${(t.ps.filter(p=>!p.p).length*tk(t)).toLocaleString()}원`:'');
 function recBadge(g){const r=R[g[0]];if(!r)return'';const t=[];if(r.bk)t.push('예매 완료');else if(r.ch)t.push('예매 도전');if(r.hs!==''&&r.as!=='')t.push(r.hs+':'+r.as);const u=unp(r);if(u)t.push('미정산 '+u+'명');return t.length?`<small><em>${t.join(' · ')}</em></small>`:''}
 function gameRow(g){const o=opens(g).map(e=>fmt(e.d)+' '+hm(e.d)+' '+e.lab).join(' / ');
- return `<div class="g ${rel(g)?'':'dim'}"><span class="tm num">${g[2]}</span><span class="bar" style="background:${two(g)}"></span><div style="flex:1"><b>${g[3]}</b> 홈 vs ${g[4]}<small>${V[g[3]]}</small><small>예매 <em>${o}</em></small>${recBadge(g)}</div><div style="display:flex;flex-direction:column;gap:6px"><button class="chip" data-a="bp:${g[0]}">예매</button><button class="chip" data-a="edit:${g[0]}">기록</button></div></div>`}
+ return `<div class="g ${rel(g)?'':'dim'}"><span class="tm num">${g[2]}</span><span class="bar" style="background:${twoB(g)}"></span><div style="flex:1"><b>${g[3]}</b> 홈 vs ${g[4]}<small>${V[g[3]]}</small><small>예매 <em>${o}</em></small>${recBadge(g)}</div><div style="display:flex;flex-direction:column;gap:6px"><button class="chip" data-a="bp:${g[0]}">예매</button><button class="chip" data-a="edit:${g[0]}">기록</button></div></div>`}
 function todayCard(){const k=key(now),ip=g=>S.pref.includes(g[3])||S.pref.includes(g[4]),gs=G.filter(g=>g[1]===k).sort((a,b)=>ip(b)-ip(a));
  if(!gs.length)return '<div class="panel" style="margin:0 0 12px"><h2>오늘 경기</h2><p class="note" style="margin:0">오늘은 경기가 없어요.</p></div>';
- return `<div class="panel" style="margin:0 0 12px"><h2>오늘 경기 ${fmt(now)}</h2>${gs.map(g=>`<div class="g${ip(g)?' hl':''}"${ip(g)?` style="--hc:${col(g)};--ht:${inkOn(col(g))}"`:''}><span class="tm num">${g[2]}</span><span class="bar" style="background:${two(g)}"></span><div style="flex:1"><b>${g[3]}</b> 홈 vs ${g[4]}<small>${V[g[3]]}</small>${recBadge(g)}</div><button class="chip" data-a="edit:${g[0]}">기록</button></div>`).join('')}</div>`}
+ return `<div class="panel" style="margin:0 0 12px"><h2>오늘 경기 ${fmt(now)}</h2>${gs.map(g=>`<div class="g${ip(g)?' hl':''}"${ip(g)?` style="--hc:${col(g)};--ht:${inkOn(col(g))}"`:''}><span class="tm num">${g[2]}</span><span class="bar" style="background:${twoB(g)}"></span><div style="flex:1"><b>${g[3]}</b> 홈 vs ${g[4]}<small>${V[g[3]]}</small>${recBadge(g)}</div><button class="chip" data-a="edit:${g[0]}">기록</button></div>`).join('')}</div>`}
 function calView(){const{gm,bm}=idx(),y=ym[0],m=ym[1],first=new Date(y,m,1),n=new Date(y,m+1,0).getDate(),td=key(now);
  let c=WD.split('').map(w=>`<div class="wd">${w}</div>`).join('');
  for(let i=0;i<first.getDay();i++)c+='<div class="e"></div>';
@@ -241,7 +242,7 @@ const scKey=g=>g[1]+'|'+g[3]+'|'+g[4];
 const scOf=g=>{const r=R[g[0]];if(r&&r.hs!==''&&r.as!==''&&r.hs!=null&&r.as!=null)return[r.hs,r.as];const x=SC[scKey(g)];return x&&x.final?[x.hs,x.as]:null};
 function recBadge(g){const r=R[g[0]]||{},t=[];if(r.bk)t.push('예매 완료');else if(r.ch)t.push('예매 도전');const a=scOf(g);if(a)t.push('종료 '+a[0]+':'+a[1]);const u=R[g[0]]?unp(r):0;if(u)t.push('미정산 '+u+'명');return t.length?`<small><em>${t.join(' · ')}</em></small>`:''}
 function gameRow(g){const o=opens(g).filter(e=>e.d>now).map(e=>fmt(e.d)+' '+hm(e.d)+' '+e.lab).join(' / ');
- return `<div class="g ${rel(g)?'':'dim'}"><span class="tm num">${g[2]}</span><span class="bar" style="background:${two(g)}"></span><div style="flex:1"><b>${g[3]}</b> 홈 vs ${g[4]}<small>${V[g[3]]}</small>${o?`<small>예매 <em>${o}</em></small>`:''}${recBadge(g)}</div><div style="display:flex;flex-direction:column;gap:6px"><button class="chip" data-a="bp:${g[0]}">예매</button><button class="chip" data-a="edit:${g[0]}">기록</button></div></div>`}
+ return `<div class="g ${rel(g)?'':'dim'}"><span class="tm num">${g[2]}</span><span class="bar" style="background:${twoB(g)}"></span><div style="flex:1"><b>${g[3]}</b> 홈 vs ${g[4]}<small>${V[g[3]]}</small>${o?`<small>예매 <em>${o}</em></small>`:''}${recBadge(g)}</div><div style="display:flex;flex-direction:column;gap:6px"><button class="chip" data-a="bp:${g[0]}">예매</button><button class="chip" data-a="edit:${g[0]}">기록</button></div></div>`}
 function edView(){const g=G.find(x=>x[0]===eid),r=rec(eid),x=SC[scKey(g)],au=x&&x.final,hv=r.hs!==''?r.hs:(au?x.hs:''),av=r.as!==''?r.as:(au?x.as:'');
  return `<div class="nav"><button data-a="back" aria-label="뒤로">‹</button><h1 style="font-size:17px">${fmt(gdt(g))} ${g[3]} vs ${g[4]}</h1><button class="chip" data-a="bp:${eid}">예매·정산</button></div>
 <div class="panel ed"><h2>스코어</h2><div class="row"><span>${g[3]}</span><input data-f="hs" type="number" inputmode="numeric" value="${q(hv)}" style="text-align:center" aria-label="${g[3]} 점수"><span>:</span><input data-f="as" type="number" inputmode="numeric" value="${q(av)}" style="text-align:center" aria-label="${g[4]} 점수"><span>${g[4]}</span></div>${au&&r.hs===''&&r.as===''?'<p class="note">KBL 기록이 자동 반영됐어요. 직접 고치면 내 입력이 우선돼요.</p>':''}</div>
