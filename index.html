@@ -278,8 +278,11 @@ const zFilter=L=>L.filter(g=>{if(zf.teams.length&&!zf.teams.includes(g[3])&&!zf.
  if(zf.res!=='all'&&resOf(g)!==zf.res)return false;if(zf.mons.length&&!zf.mons.includes(+g[1].slice(5,7)))return false;return true});
 const wl=L=>{let w=0,l=0;L.forEach(g=>{const x=resOf(g);if(x==='W')w++;else if(x==='L')l++});return[w,l]};
 const resChip=x=>x?`<span class="res ${x==='W'?'w':'l'}">${x==='W'?'승':'패'}</span>`:'';
+const bNames=r=>[...new Set((r.it||[]).flatMap(t=>[t.b].concat(t.ps.map(p=>p.n))).filter(n=>n&&n!=='나'))];
+const withOf=r=>[...new Set((r.with||[]).concat(bNames(r)))];
+const whList=r=>[...new Set(S.fr.concat(r.with||[],bNames(r)))];
 function zCard(g){const r=R[g[0]]||{},s=scOf(g),ct=cheerOf(g),seat=(r.it||[]).map(t=>[t.z,t.s].filter(Boolean).join(' ')).filter(Boolean).join(' · '),
- who=[...new Set((r.it||[]).flatMap(t=>[t.b].concat(t.ps.map(p=>p.n))).filter(n=>n&&n!=='나'))].join(' · ');
+ who=withOf(r).join(' · ');
  const tg=[seat,who&&'함께 '+who,ct&&'응원 '+ct,r.mvp&&'오늘의 선수 '+r.mvp].concat(r.tags||[]).filter(Boolean);
  return `<button class="zc" data-a="edit:${g[0]}"><div class="h"><span class="bar" style="width:6px;align-self:stretch;border-radius:3px;background:${twoB(g)}"></span><div style="flex:1"><small>${fmt(gdt(g))} ${g[2]} · ${V[g[3]]}</small><b>${g[3]} 홈 vs ${g[4]}</b>${resChip(resOf(g))}</div>${s?`<span class="sc">${s[0]}:${s[1]}</span>`:''}</div>${r.memo?`<p style="margin:8px 0 0;font-size:14px">“${q(r.memo)}”</p>`:''}${tg.length?`<div>${tg.map(t=>`<span class="tag">${q(t)}</span>`).join('')}</div>`:''}</button>`}
 function zkView(){const all=attList(),L=zFilter(all),[w,l]=wl(all),un=all.filter(g=>!cheerOf(g)).length,
@@ -307,6 +310,7 @@ function edView(){const g=G.find(x=>x[0]===eid),r=rec(eid),x=SC[scKey(g)],au=x&&
 <div class="panel ed"><h2>한줄평</h2><textarea data-f="memo" rows="3" placeholder="오늘 경기는…">${q(r.memo)}</textarea>
 <p class="lab">응원한 팀 <span style="font-weight:400">· 승/패와 승률 계산에 써요</span>${rs?resChip(rs):''}</p><div class="fl">${[['H',g[3]],['A',g[4]],['N','없음']].map(c=>`<button class="chip" aria-pressed="${sel===c[0]}" data-a="cheer:${c[0]}">${c[0]==='N'?'':`<i style="background:${C[c[1]]}"></i>`}${c[1]}</button>`).join('')}</div>
 ${!r.cheer&&ct?'<p class="note" style="margin:6px 0 0">선호 구단 기준으로 자동 선택됐어요.</p>':''}
+<p class="lab">같이 간 사람 <span style="font-weight:400">· 예매를 따로 했어도 기록할 수 있어요</span></p><div class="fl">${whList(r).map((n,i)=>{const b=bNames(r).includes(n);return `<button class="chip" aria-pressed="${b||(r.with||[]).includes(n)}" ${b?'disabled':''} data-a="wh:${i}">${q(n)}</button>`}).join('')||'<span class="note" style="margin:0">아직 없어요. 아래에 이름을 입력해 추가하세요.</span>'}</div><div class="row"><input id="nwh" maxlength="12" placeholder="이름 직접 입력" aria-label="같이 간 사람 이름"><button class="chip" data-a="whadd">추가</button></div>${bNames(r).length?'<p class="note" style="margin:6px 0 0">예매·정산에 있는 사람은 자동으로 들어가요.</p>':''}
 <p class="lab">오늘의 선수</p><input data-f="mvp" value="${q(r.mvp)}" placeholder="이름" aria-label="오늘의 선수">
 <p class="lab">한 줄 태그</p><div class="fl">${tags.map((t,i)=>`<button class="chip" aria-pressed="${(r.tags||[]).includes(t)}" data-a="tag:${i}">${q(t)}</button>`).join('')}</div><div class="row"><input id="ntag" maxlength="12" placeholder="태그 직접 입력" aria-label="태그 직접 입력"><button class="chip" data-a="tagadd">추가</button></div></div>
 ${has?`<div class="panel"><h2>예매 정보 <span style="font-weight:400">· 예매·정산에서 가져와요</span></h2><div style="font-size:14px">${(r.it||[]).filter(t=>t.z||t.s||t.u).map(t=>`${q([t.z,t.s].filter(Boolean).join(' ')||'좌석 미입력')} ${t.q}매`).join('<br>')}<br><span class="mut">내 부담 ${myCost(r).toLocaleString()}원${unp(r)?' · 미정산 '+unp(r)+'명':''}</span></div></div>`:''}`}
@@ -317,6 +321,8 @@ function zkAct(a,v){
   if(a==='tag'){const n=DEFTAGS.concat(r.tags.filter(t=>!DEFTAGS.includes(t)))[+v];if(n){const i=r.tags.indexOf(n);i<0?r.tags.push(n):r.tags.splice(i,1)}}
   else{const el=document.getElementById('ntag'),n=((el&&el.value)||'').replace(/[:<>]/g,'').trim().slice(0,12);if(n&&!r.tags.includes(n))r.tags.push(n)}
   saveR();return 1}
+ if(a==='wh'){const r=rec(eid),n=whList(r)[+v];if(n&&!bNames(r).includes(n)){r.with=r.with||[];const i=r.with.indexOf(n);i<0?r.with.push(n):r.with.splice(i,1);saveR()}return 1}
+ if(a==='whadd'){const r=rec(eid),el=document.getElementById('nwh'),n=((el&&el.value)||'').replace(/[:<>]/g,'').trim().slice(0,12);if(n&&n!=='나'&&!withOf(r).includes(n)){r.with=r.with||[];r.with.push(n);saveR()}return 1}
  if(a==='zfo'){zf.open=zf.open?0:1;return 1}
  if(a==='zamt'){zamt=zamt?0:1;return 1}
  if(a==='zfr'){zf.res=v;return 1}
