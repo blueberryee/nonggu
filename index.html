@@ -157,6 +157,16 @@ a.chip{text-decoration:none;color:inherit}
 .g.hl small,.g.hl em{color:var(--ht);opacity:.85}.g.hl .bar{background:var(--ht)!important;opacity:.5}
 .g.hl .chip{background:transparent;border-color:var(--ht);color:var(--ht)}.g.hl .chip[aria-pressed="true"]{background:var(--ht);color:var(--hc)}.d u.c{right:auto;left:2px;bottom:2px;font:700 9px/1 'Noto Sans KR',sans-serif;padding:2px 3px;border-radius:3px;letter-spacing:-.03em}.d u:not(.c){bottom:auto;top:2px}button.g{width:100%;text-align:left}
 .ed select{flex:1;min-width:0;font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:8px;padding:0 8px;min-height:44px}
+.stw{position:absolute;left:0;right:0;top:46%;display:flex;justify-content:center;pointer-events:none}.stw svg{width:80%;max-width:58px;height:auto;overflow:visible}
+.stat{display:flex;gap:8px;margin-top:12px}.stat div{flex:1;background:var(--card);border-radius:12px;padding:10px 12px}.stat small{display:block;color:var(--mut);font-size:12px}.stat b{font:700 22px Oswald,"Noto Sans KR",sans-serif}
+.lnk{font-size:13px;color:var(--mut);text-decoration:underline;min-height:32px}
+.mut{color:var(--mut)}
+.res{font:700 12px "Noto Sans KR",sans-serif;padding:1px 7px;border-radius:9px;color:#fff;margin-left:6px;vertical-align:middle}.res.w{background:#2e7d32}.res.l{background:#c62828}
+.zc{display:block;width:100%;text-align:left;background:var(--card);border-radius:12px;padding:12px;margin-top:10px;color:inherit}
+.zc .h{display:flex;align-items:center;gap:10px}.zc .sc{font:700 20px Oswald,sans-serif}.zc small{display:block;color:var(--mut);font-size:12px}
+.tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:10px;background:var(--bg);color:var(--mut);margin:4px 4px 0 0}
+.fl{display:flex;flex-wrap:wrap;gap:6px}.fl .chip{min-height:32px;padding:0 10px;font-size:13px}
+.lab{font-size:13px;color:var(--mut);margin:12px 0 4px;font-weight:500}
 </style>
 <script>
 S.fr=S.fr||[];
@@ -178,10 +188,10 @@ function calView(){const{gm,bm}=idx(),y=ym[0],m=ym[1],first=new Date(y,m,1),n=ne
  let c=WD.split('').map(w=>`<div class="wd">${w}</div>`).join('');
  for(let i=0;i<first.getDay();i++)c+='<div class="e"></div>';
  for(let d=1;d<=n;d++){const k=y+'-'+p2(m+1)+'-'+p2(d),ch2=(bm[k]||[]).filter(x=>{const r=R[x[0][0]]||{};return r.ch&&!r.bk}),cc=ch2.length,tc=cc?col(ch2[0][0]):'#000',oo=(bm[k]||[]).length-cc;
-  c+=`<button class="d ${k===td?'t':''} ${k===sel?'s':''}" data-k="${k}" aria-label="${m+1}월 ${d}일"><b>${d}</b><span class="dots">${(gm[k]||[]).map(g=>`<i style="background:${two(g)}"></i>`).join('')}</span>${cc?`<u class="c" style="background:${tc};color:${inkOn(tc)}">티켓팅${cc>1?cc:''}</u>`:''}</button>`}
+  c+=`<button class="d ${k===td?'t':''} ${k===sel?'s':''}" data-k="${k}" aria-label="${m+1}월 ${d}일"><b>${d}</b>${stubOrDots(k,gm[k]||[])}${cc?`<u class="c" style="background:${tc};color:${inkOn(tc)}">티켓팅${cc>1?cc:''}</u>`:''}</button>`}
  const gs=G.filter(g=>g[1]===sel),bs=bm[sel]||[],sd=new Date(sel+'T00:00');
  const det=`<div class="panel"><h2>${fmt(sd)} 경기 ${gs.length}</h2>${gs.map(gameRow).join('')||'<p class="note">이 날은 경기가 없어요.</p>'}</div>`+
-  (bs.length?`<div class="panel"><h2>이 날 예매 오픈 ${bs.length}</h2>${bs.map(x=>`<button class="g" data-a="bp:${x[0][0]}"><span class="tm num">${hm(x[1].d)}</span><span class="bar" style="background:var(--hot)"></span><div style="flex:1"><b>${fmt(gdt(x[0]))} ${x[0][3]} vs ${x[0][4]}</b><small>${x[1].lab} 예매 · 눌러서 예매·정산 열기</small>${recBadge(x[0])}</div><span aria-hidden="true">›</span></button>`).join('')}</div>`:'');
+  (bs.length?`<div class="panel"><h2>이 날 예매 오픈 ${bs.length}</h2>${bs.map(x=>`<button class="g" data-a="bp:${x[0][0]}"><span class="tm num">${hm(x[1].d)}</span><span class="bar" style="background:${col(x[0])}"></span><div style="flex:1"><b>${fmt(gdt(x[0]))} ${x[0][3]} vs ${x[0][4]}</b><small>${x[1].lab} 예매 · 눌러서 예매·정산 열기</small>${recBadge(x[0])}</div><span aria-hidden="true">›</span></button>`).join('')}</div>`:'');
  const pv=y===2026&&m===9,nx=y===2027&&m===3;
  return nextBar()+todayCard()+chView()+`<div class="nav"><button data-a="pm" ${pv?'disabled':''} aria-label="이전 달">‹</button><h1>${y}년 ${m+1}월</h1><button data-a="nm" ${nx?'disabled':''} aria-label="다음 달">›</button></div><div class="grid">${c}</div>`+
   (S.pref.length?'':'<p class="note">선호 구단을 고르면 해당 팀 경기와 예매 오픈만 표시돼요.</p>')+det}
@@ -212,6 +222,7 @@ ${t.ps.length?`<p class="note" style="margin:10px 0 4px">정산 (${q(t.b)}에게
 function setView2(){const fr=`<div class="panel ed"><h2>자주 가는 친구</h2><div class="chips">${S.fr.map((n,i)=>`<button class="chip" data-a="fdel:${i}" aria-label="${q(n)} 삭제">${q(n)} ×</button>`).join('')||'<span class="note">아직 없어요.</span>'}</div><div class="row"><input id="fn" placeholder="이름 입력" aria-label="친구 이름"><button class="chip" data-a="fadd">추가</button></div><p class="note">예매·정산 화면에서 예매자와 같이 가는 사람으로 고를 수 있어요. 내 이름은 나로 고정이에요.</p></div>`;
  return setView().replace('<div class="panel ed"><h2>백업',fr+'<div class="panel ed"><h2>백업')}
 function editAct(a,v){
+ if(zkAct(a,v))return 1;
  if(a==='edit'||a==='bp'){pt=(tab==='ed'||tab==='bp')?pt:tab;tab=a==='bp'?'bp':'ed';eid=+v;rec(eid);window.scrollTo(0,0);return 1}
  if(a==='ch'){const x=rec(+v);x.ch=x.ch?0:1;saveR();return 1}
  if(a==='usesc'){const g=G.find(x=>x[0]===eid),s=SC[scKey(g)];if(s){const r=rec(eid);r.hs=s.hs;r.as=s.as;saveR()}return 1}
@@ -242,7 +253,7 @@ const gcal=(g,e)=>{const p=n=>String(n).padStart(2,'0'),f=t=>''+t.getFullYear()+
 let SC={};
 const scKey=g=>g[1]+'|'+g[3]+'|'+g[4];
 const scOf=g=>{const r=R[g[0]];if(r&&r.hs!==''&&r.as!==''&&r.hs!=null&&r.as!=null)return[r.hs,r.as];const x=SC[scKey(g)];return x&&x.final?[x.hs,x.as]:null};
-function recBadge(g){const r=R[g[0]]||{},t=[];if(r.bk)t.push('예매 완료');else if(r.ch)t.push('예매 도전');const a=scOf(g);if(a)t.push('종료 '+a[0]+':'+a[1]);const u=R[g[0]]?unp(r):0;if(u)t.push('미정산 '+u+'명');return t.length?`<small><em>${t.join(' · ')}</em></small>`:''}
+function recBadge(g){const r=R[g[0]]||{},t=[];if(r.att)t.push('직관 완료');else if(r.bk)t.push('예매 완료');else if(r.ch)t.push('예매 도전');const a=scOf(g);if(a)t.push('종료 '+a[0]+':'+a[1]);const u=R[g[0]]?unp(r):0;if(u)t.push('미정산 '+u+'명');return t.length?`<small><em>${t.join(' · ')}</em></small>`:''}
 function gameRow(g){const o=opens(g).filter(e=>e.d>now).map(e=>fmt(e.d)+' '+hm(e.d)+' '+e.lab).join(' / ');
  return `<div class="g ${rel(g)?'':'dim'}"><span class="tm num">${g[2]}</span><span class="bar" style="background:${twoB(g)}"></span><div style="flex:1"><b>${g[3]}</b> 홈 vs ${g[4]}<small>${V[g[3]]}</small>${o?`<small>예매 <em>${o}</em></small>`:''}${recBadge(g)}</div><div style="display:flex;flex-direction:column;gap:6px"><button class="chip" data-a="bp:${g[0]}">예매</button><button class="chip" data-a="edit:${g[0]}">기록</button></div></div>`}
 function edView(){const g=G.find(x=>x[0]===eid),r=rec(eid),x=SC[scKey(g)],au=x&&x.final,hv=r.hs!==''?r.hs:(au?x.hs:''),av=r.as!==''?r.as:(au?x.as:'');
@@ -250,6 +261,71 @@ function edView(){const g=G.find(x=>x[0]===eid),r=rec(eid),x=SC[scKey(g)],au=x&&
 <div class="panel ed"><h2>스코어</h2><div class="row"><span>${g[3]}</span><input data-f="hs" type="number" inputmode="numeric" value="${q(hv)}" style="text-align:center" aria-label="${g[3]} 점수"><span>:</span><input data-f="as" type="number" inputmode="numeric" value="${q(av)}" style="text-align:center" aria-label="${g[4]} 점수"><span>${g[4]}</span></div>${au&&r.hs===''&&r.as===''?'<p class="note">KBL 기록이 자동 반영됐어요. 직접 고치면 내 입력이 우선돼요.</p>':''}</div>
 <div class="panel ed"><h2>한줄평</h2><textarea data-f="memo" rows="3" placeholder="오늘 경기는…">${q(r.memo)}</textarea></div>`}
 document.addEventListener('input',e=>{const f=e.target.dataset.f;if(tab!=='ed'||(f!=='hs'&&f!=='as'))return;const g=G.find(x=>x[0]===eid),x=SC[scKey(g)],r=rec(eid);if(x&&x.final){if(r.hs==='')r.hs=String(x.hs);if(r.as==='')r.as=String(x.as);saveR()}});
+// ===== 직관 탭 · 직관 도장(티켓) · 응원한 팀 =====
+const DEFTAGS=['역전승','접전','대승','연장','응원 열기','아쉬움'],MONS=[10,11,12,1,2,3,4];
+let zf={open:0,teams:[],res:'all',mons:[]},zamt=0;
+const stub=g=>{const h=C[g[3]],a=C[g[4]],id='st'+g[0],rot=((g[0]*7)%17)-8;
+ return `<svg viewBox="0 0 60 36" style="transform:rotate(${rot}deg);filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))" role="img" aria-label="직관 완료"><defs><clipPath id="${id}"><path d="M3 0H57a3 3 0 0 1 3 3V12a4 4 0 0 0 0 8V33a3 3 0 0 1-3 3H3a3 3 0 0 1-3-3V20a4 4 0 0 0 0-8V3a3 3 0 0 1 3-3Z"/></clipPath></defs><g clip-path="url(#${id})"><rect width="60" height="36" fill="${h}"/><rect x="42" width="18" height="36" fill="${a}"/><line x1="42" y1="2" x2="42" y2="34" stroke="#fff" stroke-width="1" stroke-dasharray="2 2"/></g><text x="21" y="23" text-anchor="middle" font-size="13" font-weight="800" fill="${inkOn(h)}" font-family="Noto Sans KR,sans-serif" letter-spacing="-0.5">직관</text></svg>`};
+function stubOrDots(k,gs){const a=G.find(g=>g[1]===k&&(R[g[0]]||{}).att);if(a)return `<span class="stw">${stub(a)}</span>`;
+ return `<span class="dots">${gs.map(g=>`<i style="background:${two(g)}"></i>`).join('')}</span>`}
+function cheerOf(g){const r=R[g[0]]||{};if(r.cheer==='H')return g[3];if(r.cheer==='A')return g[4];if(r.cheer==='N')return null;
+ const hp=S.pref.includes(g[3]),ap=S.pref.includes(g[4]);return hp&&!ap?g[3]:ap&&!hp?g[4]:null}
+function resOf(g){const t=cheerOf(g),s=scOf(g);if(!t||!s)return null;return (t===g[3])===(+s[0]>+s[1])?'W':'L'}
+const myCost=r=>(r.it||[]).reduce((n,t)=>n+(t.b==='나'?Math.max(1,t.q-t.ps.length):(t.ps.some(p=>p.n==='나')?1:0))*tk(t),0);
+const dueOf=r=>{let get=0,give=0;(r.it||[]).forEach(t=>t.ps.forEach(p=>{if(p.p)return;if(t.b==='나')get+=tk(t);else if(p.n==='나')give+=tk(t)}));return[get,give]};
+const attList=()=>G.filter(g=>(R[g[0]]||{}).att).sort((a,b)=>gdt(b)-gdt(a));
+const zFilter=L=>L.filter(g=>{if(zf.teams.length&&!zf.teams.includes(g[3])&&!zf.teams.includes(g[4]))return false;
+ if(zf.res!=='all'&&resOf(g)!==zf.res)return false;if(zf.mons.length&&!zf.mons.includes(+g[1].slice(5,7)))return false;return true});
+const wl=L=>{let w=0,l=0;L.forEach(g=>{const x=resOf(g);if(x==='W')w++;else if(x==='L')l++});return[w,l]};
+const resChip=x=>x?`<span class="res ${x==='W'?'w':'l'}">${x==='W'?'승':'패'}</span>`:'';
+function zCard(g){const r=R[g[0]]||{},s=scOf(g),ct=cheerOf(g),seat=(r.it||[]).map(t=>[t.z,t.s].filter(Boolean).join(' ')).filter(Boolean).join(' · '),
+ who=[...new Set((r.it||[]).flatMap(t=>[t.b].concat(t.ps.map(p=>p.n))).filter(n=>n&&n!=='나'))].join(' · ');
+ const tg=[seat,who&&'함께 '+who,ct&&'응원 '+ct,r.mvp&&'오늘의 선수 '+r.mvp].concat(r.tags||[]).filter(Boolean);
+ return `<button class="zc" data-a="edit:${g[0]}"><div class="h"><span class="bar" style="width:6px;align-self:stretch;border-radius:3px;background:${twoB(g)}"></span><div style="flex:1"><small>${fmt(gdt(g))} ${g[2]} · ${V[g[3]]}</small><b>${g[3]} 홈 vs ${g[4]}</b>${resChip(resOf(g))}</div>${s?`<span class="sc">${s[0]}:${s[1]}</span>`:''}</div>${r.memo?`<p style="margin:8px 0 0;font-size:14px">“${q(r.memo)}”</p>`:''}${tg.length?`<div>${tg.map(t=>`<span class="tag">${q(t)}</span>`).join('')}</div>`:''}</button>`}
+function zkView(){const all=attList(),L=zFilter(all),[w,l]=wl(all),un=all.filter(g=>!cheerOf(g)).length,
+ pend=G.filter(g=>{const r=R[g[0]]||{};return r.bk&&!r.att&&gdt(g)<now}).sort((a,b)=>gdt(b)-gdt(a)),
+ active=zf.teams.length||zf.res!=='all'||zf.mons.length;
+ let cost=0,get=0,give=0;L.forEach(g=>{const r=R[g[0]];cost+=myCost(r);const d=dueOf(r);get+=d[0];give+=d[1]});
+ const [fw,fl]=wl(L);
+ const stat=`<div class="stat"><div><small>직관 경기</small><b>${all.length}</b></div><div><small>응원팀 승률</small><b>${w}승 ${l}패</b>${w+l?`<small>${Math.round(w/(w+l)*100)}%</small>`:''}</div></div>`+(un?`<p class="note" style="margin:6px 4px 0">응원팀을 고르지 않은 ${un}경기는 승패에서 빠져요.</p>`:'');
+ const amt=`<p style="text-align:right;margin:6px 4px 0"><button class="lnk" data-a="zamt">${zamt?'금액 숨기기':'총 금액 보기'}</button></p>`+(zamt?`<div class="panel" style="margin-top:4px"><small class="mut">내 부담 금액${active?' (필터 결과 기준)':''}</small><div><b class="num" style="font-size:20px">${cost.toLocaleString()}원</b> <small class="mut">· 경기당 ${L.length?Math.round(cost/L.length).toLocaleString():0}원</small></div><small class="mut">미정산: 받을 돈 ${get.toLocaleString()}원 · 줄 돈 ${give.toLocaleString()}원</small></div>`:'');
+ const pd=pend.length?`<div class="panel"><h2>직관 완료 대기 ${pend.length} <span style="font-weight:400">· 예매했는데 아직 안 눌렀어요</span></h2>${pend.map(g=>`<div class="g"><span class="tm num" style="width:auto">${fmt(gdt(g)).slice(0,-3)}</span><span class="bar" style="background:${twoB(g)}"></span><div style="flex:1"><b>${g[3]} 홈 vs ${g[4]}</b><small>${V[g[3]]} · 예매 완료</small></div><button class="chip" style="align-self:center" data-a="att:${g[0]}">직관 완료</button></div>`).join('')}</div>`:'';
+ const chips=zf.teams.map(t=>`<span class="chip" aria-pressed="true" style="min-height:28px;font-size:12px">${t}</span>`).concat(zf.res!=='all'?[`<span class="chip" aria-pressed="true" style="min-height:28px;font-size:12px">${zf.res==='W'?'승':'패'}</span>`]:[]).concat(zf.mons.map(m=>`<span class="chip" aria-pressed="true" style="min-height:28px;font-size:12px">${m}월</span>`)).join('');
+ const fp=zf.open?`<div class="panel"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><h2 style="margin:0">필터</h2><button class="chip" style="min-height:32px;font-size:13px" data-a="zfo">접기 ▴</button></div>
+<p class="lab" style="margin-top:0">팀 <span style="font-weight:400">· 하나라도 포함된 경기</span></p><div class="fl">${TEAMS.map(t=>`<button class="chip" aria-pressed="${zf.teams.includes(t)}" data-a="zft:${t}"><i style="background:${C[t]}"></i>${t}</button>`).join('')}</div>
+<p class="lab">결과 (응원한 팀 기준)</p><div class="fl">${[['all','전체'],['W','승'],['L','패']].map(x=>`<button class="chip" aria-pressed="${zf.res===x[0]}" data-a="zfr:${x[0]}">${x[1]}</button>`).join('')}</div>
+<p class="lab">월</p><div class="fl">${MONS.map(m=>`<button class="chip" aria-pressed="${zf.mons.includes(m)}" data-a="zfm:${m}">${m}월</button>`).join('')}</div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:8px"><small class="mut"><b style="color:var(--ink)">${L.length}경기 · ${fw}승 ${fl}패</b><br>팀은 하나라도, 나머지는 모두 맞아야 해요</small><button class="chip" style="min-height:32px;font-size:13px;white-space:nowrap;flex:none" data-a="zfx">초기화</button></div></div>`
+ :`<div class="panel" style="padding:8px 12px"><div style="display:flex;align-items:center;gap:8px"><button class="chip" style="min-height:36px;flex:none" data-a="zfo">필터 ▾</button><div class="fl" style="flex:1;flex-wrap:nowrap;overflow:hidden">${chips}</div>${active?'<button class="lnk" data-a="zfx" style="flex:none">초기화</button>':''}</div>${active?`<small class="mut" style="display:block;margin-top:6px">결과 ${L.length}경기 · ${fw}승 ${fl}패</small>`:''}</div>`;
+ return `<div class="nav"><span style="width:44px"></span><h1>직관</h1><span style="width:44px"></span></div>`+stat+amt+pd+fp+(L.map(zCard).join('')||`<div class="panel"><p class="note" style="margin:0">${all.length?'필터에 맞는 경기가 없어요.':'아직 직관한 경기가 없어요. 달력에서 경기의 기록을 열어 직관 완료를 눌러 주세요.'}</p></div>`)}
+function edView(){const g=G.find(x=>x[0]===eid),r=rec(eid),x=SC[scKey(g)],au=x&&x.final,hv=r.hs!==''?r.hs:(au?x.hs:''),av=r.as!==''?r.as:(au?x.as:''),
+ ct=cheerOf(g),sel=r.cheer||(ct===g[3]?'H':ct===g[4]?'A':''),tags=DEFTAGS.concat((r.tags||[]).filter(t=>!DEFTAGS.includes(t))),
+ has=(r.it||[]).some(t=>t.z||t.s||t.u),rs=resOf(g);
+ return `<div class="nav"><button data-a="back" aria-label="뒤로">‹</button><h1 style="font-size:17px">${fmt(gdt(g))} ${g[3]} vs ${g[4]}</h1><button class="chip" data-a="bp:${eid}">예매·정산</button></div>
+<div class="panel" style="margin-top:4px;display:flex;align-items:center;gap:10px"><button class="chip" aria-pressed="${!!r.att}" data-a="att:${eid}" style="flex:none">${r.att?'✓ 직관 완료':'직관 완료'}</button><small class="mut">${r.att?'달력에 직관 티켓이 붙어 있어요':'누르면 달력에 직관 티켓이 붙어요'}</small></div>
+<div class="panel ed"><h2>스코어</h2><div class="row"><span>${g[3]}</span><input data-f="hs" type="number" inputmode="numeric" value="${q(hv)}" style="text-align:center" aria-label="${g[3]} 점수"><span>:</span><input data-f="as" type="number" inputmode="numeric" value="${q(av)}" style="text-align:center" aria-label="${g[4]} 점수"><span>${g[4]}</span></div>${au&&r.hs===''&&r.as===''?'<p class="note">KBL 기록이 자동 반영됐어요. 직접 고치면 내 입력이 우선돼요.</p>':''}</div>
+<div class="panel ed"><h2>한줄평</h2><textarea data-f="memo" rows="3" placeholder="오늘 경기는…">${q(r.memo)}</textarea>
+<p class="lab">응원한 팀 <span style="font-weight:400">· 승/패와 승률 계산에 써요</span>${rs?resChip(rs):''}</p><div class="fl">${[['H',g[3]],['A',g[4]],['N','없음']].map(c=>`<button class="chip" aria-pressed="${sel===c[0]}" data-a="cheer:${c[0]}">${c[0]==='N'?'':`<i style="background:${C[c[1]]}"></i>`}${c[1]}</button>`).join('')}</div>
+${!r.cheer&&ct?'<p class="note" style="margin:6px 0 0">선호 구단 기준으로 자동 선택됐어요.</p>':''}
+<p class="lab">오늘의 선수</p><input data-f="mvp" value="${q(r.mvp)}" placeholder="이름" aria-label="오늘의 선수">
+<p class="lab">한 줄 태그</p><div class="fl">${tags.map((t,i)=>`<button class="chip" aria-pressed="${(r.tags||[]).includes(t)}" data-a="tag:${i}">${q(t)}</button>`).join('')}</div><div class="row"><input id="ntag" maxlength="12" placeholder="태그 직접 입력" aria-label="태그 직접 입력"><button class="chip" data-a="tagadd">추가</button></div></div>
+${has?`<div class="panel"><h2>예매 정보 <span style="font-weight:400">· 예매·정산에서 가져와요</span></h2><div style="font-size:14px">${(r.it||[]).filter(t=>t.z||t.s||t.u).map(t=>`${q([t.z,t.s].filter(Boolean).join(' ')||'좌석 미입력')} ${t.q}매`).join('<br>')}<br><span class="mut">내 부담 ${myCost(r).toLocaleString()}원${unp(r)?' · 미정산 '+unp(r)+'명':''}</span></div></div>`:''}`}
+function zkAct(a,v){
+ if(a==='att'){const r=rec(+v);r.att=r.att?0:1;saveR();return 1}
+ if(a==='cheer'){const r=rec(eid);if(r.cheer===v)delete r.cheer;else r.cheer=v;saveR();return 1}
+ if(a==='tag'||a==='tagadd'){const r=rec(eid);r.tags=r.tags||[];
+  if(a==='tag'){const n=DEFTAGS.concat(r.tags.filter(t=>!DEFTAGS.includes(t)))[+v];if(n){const i=r.tags.indexOf(n);i<0?r.tags.push(n):r.tags.splice(i,1)}}
+  else{const el=document.getElementById('ntag'),n=((el&&el.value)||'').replace(/[:<>]/g,'').trim().slice(0,12);if(n&&!r.tags.includes(n))r.tags.push(n)}
+  saveR();return 1}
+ if(a==='zfo'){zf.open=zf.open?0:1;return 1}
+ if(a==='zamt'){zamt=zamt?0:1;return 1}
+ if(a==='zfr'){zf.res=v;return 1}
+ if(a==='zft'){const i=zf.teams.indexOf(v);i<0?zf.teams.push(v):zf.teams.splice(i,1);return 1}
+ if(a==='zfm'){const m=+v,i=zf.mons.indexOf(m);i<0?zf.mons.push(m):zf.mons.splice(i,1);return 1}
+ if(a==='zfx'){zf.teams=[];zf.res='all';zf.mons=[];return 1}
+ return 0}
+function render(){const v=tab==='cal'?calView():tab==='bk'?bookView():tab==='zk'?zkView():tab==='ed'?edView():tab==='bp'?bpView():setView2();document.getElementById('app').innerHTML=v;
+ document.getElementById('tabs').innerHTML=[['cal','달력'],['bk','예매'],['zk','직관'],['set','내 설정']].map(t=>`<button data-a="tab:${t[0]}" ${((tab==='ed'||tab==='bp')?pt:tab)===t[0]?'aria-current="true"':''}>${t[1]}</button>`).join('')}
 try{fetch('scores.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{if(j&&j.games){j.games.forEach(s=>{SC[s.date+'|'+s.home+'|'+s.away]=s});render()}}).catch(()=>{})}catch(e){}
 render();
 </script>
